@@ -1,0 +1,5 @@
+{
+    "commandDescription": "Deploy bit2win archetypes to target sfdx organization as data",
+    "orgAliasFlagDescription": "Alias of the target organization",
+    "debugFlagDescription": "enables debug logging"
+  }

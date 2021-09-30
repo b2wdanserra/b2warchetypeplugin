@@ -1,0 +1,5 @@
+{
+    "commandDescription": "Save archetype bundle locally",
+    "debugFlagDescription": "enables debug logging",
+    "nameFlagDescription" : "Name of the archetype that has to be saved"
+  }

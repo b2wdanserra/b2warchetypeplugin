@@ -1,0 +1,5 @@
+{
+    "commandDescription": "Extract bit2win archetypes as file bundle inside current folder from source org",
+    "orgAliasFlagDescription": "Alias of the source organization",
+    "debugFlagDescription": "enables debug logging"
+  }

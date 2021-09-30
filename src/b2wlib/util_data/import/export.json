@@ -1,0 +1,61 @@
+{
+    "allOrNone": true,
+    "apiVersion": "50.0",
+    "promptOnMissingParentObjects": true,
+    "concurrencyMode": "Serial",
+    "importCSVFilesAsIs" : true,
+    "objects": [
+        {
+            "description" : "Archetypes",
+            "query": "Select RecordTypeId, Bit2Archetypes__Archetype_Process__c, Bit2Archetypes__Archetype_Script__c, Bit2Archetypes__External_Id__c, Bit2Archetypes__Name__c, Bit2Archetypes__Type__c, Bit2Archetypes__Agenda_Group__c, Bit2Archetypes__Allow_loop__c, Bit2Archetypes__Federated__c, Bit2Archetypes__Optimized__c from Bit2Archetypes__Archetype__c",
+            "operation": "Upsert",
+            "externalId": "Bit2Archetypes__External_Id__c"
+        },
+        {
+            "description" : "Archetype Conditions",
+            "query" : "Select Name, Bit2Archetypes__External_Id__c, Bit2Archetypes__Label__c, Bit2Archetypes__Name__c, Bit2Archetypes__Path__c, Bit2Archetypes__Type__c, Bit2Archetypes__Template__c, Bit2Archetypes__Variables__c, Bit2Archetypes__Relationship__c  from Bit2Archetypes__Archetype_Condition__c",
+            "operation": "Upsert",
+            "externalId": "Bit2Archetypes__External_Id__c"
+            
+        }, 
+        {
+            "description" : "Archetype Actions",
+            "query": "Select Bit2Archetypes__External_Id__c, Bit2Archetypes__Label__c, Bit2Archetypes__Name__c, Bit2Archetypes__Type__c from Bit2Archetypes__Archetype_Action__c",
+            "operation": "Upsert",
+            "externalId": "Bit2Archetypes__External_Id__c"
+            
+        }, 
+        {
+            "description" : "Archetype Action Step",
+            "query": "Select Name, Bit2Archetypes__Archetype_Action__c, Bit2Archetypes__Execution_sequence__c, Bit2Archetypes__External_Id__c, Bit2Archetypes__Operation__c, Bit2Archetypes__Programs__c, Bit2Archetypes__Action_Objs__c, Bit2Archetypes__Template__c from Bit2Archetypes__Archetype_Action_Step__c",
+            "operation": "Upsert",
+            "externalId": "Bit2Archetypes__External_Id__c"
+            
+        },
+        {
+            "description" : "Archetype Column Condition (junction between Archetype and Archetype Condition)",
+            "query": "Select Bit2Archetypes__Archetype__c, Bit2Archetypes__Archetype_Condition__c, Bit2Archetypes__External_Id__c, Bit2Archetypes__Synchronization_Sequence__c, Bit2Archetypes__Visualization_Sequence__c, Bit2Archetypes__Object_Mapping__c from Bit2Archetypes__Archetype_Column_Condition__c",
+            "operation": "Upsert",
+            "externalId": "Bit2Archetypes__External_Id__c"
+            
+        },
+        {
+            "description" : "Archetype Column Action (junction between Archetype and Archetype Action)",
+            "query": "Select Bit2Archetypes__Archetype__c, Bit2Archetypes__Archetype_Action__c, Bit2Archetypes__External_Id__c, Bit2Archetypes__Synchronization_Sequence__c, Bit2Archetypes__Visualization_Sequence__c, Bit2Archetypes__Object_Mapping__c from Bit2Archetypes__Archetype_Column_Action__c",
+            "operation": "Upsert",
+            "externalId": "Bit2Archetypes__External_Id__c"
+        },
+        {
+            "description" : "Archetype Action Parameter",
+            "query" : "Select id,Bit2Archetypes__Archetype_Action__c, Bit2Archetypes__Additional_Select_Field__c, Bit2Archetypes__Available_on__c, Bit2Archetypes__Description__c, Bit2Archetypes__External_Id__c, Bit2Archetypes__Field__c, Bit2Archetypes__Label__c, Bit2Archetypes__List_values__c, Bit2Archetypes__Lookup_Action_Parameter__c, Bit2Archetypes__Lookup_External_Id__c, Bit2Archetypes__Lookup_Parent_Field__c, Bit2Archetypes__Lov_subtype__c, Bit2Archetypes__Lov_type__c, Bit2Archetypes__Multiselect__c, Bit2Archetypes__Object__c, Bit2Archetypes__Required__c, Bit2Archetypes__RootInstanceConstraint__c, Bit2Archetypes__Search_specification__c, Bit2Archetypes__Type__c, Bit2Archetypes__Validation_expression__c, Bit2Archetypes__Validation_message__c, Bit2Archetypes__Visualization_sequence__c, Bit2Archetypes__requestId__c  from Bit2Archetypes__Archetype_Action_Parameter__c",
+            "operation" : "Upsert",
+            "externalId" : "Bit2Archetypes__External_Id__c"
+        },
+        {
+            "description" : "Archetype Condition Parameter",
+            "query" : "Select Id, Bit2Archetypes__Archetype_Condition__c, Bit2Archetypes__Additional_Select_Field__c, Bit2Archetypes__Description__c, Bit2Archetypes__External_Id__c, Bit2Archetypes__Field__c, Bit2Archetypes__Label__c, Bit2Archetypes__List_values__c, Bit2Archetypes__Lookup_Condition_Parameter__c, Bit2Archetypes__Lookup_External_Id__c, Bit2Archetypes__Lookup_Parent_Field__c, Bit2Archetypes__Lov_subtype__c, Bit2Archetypes__Lov_type__c, Bit2Archetypes__Multiselect__c, Bit2Archetypes__Object__c, Bit2Archetypes__Required__c, Bit2Archetypes__RootInstanceConstraint__c, Bit2Archetypes__Search_specification__c, Bit2Archetypes__Type__c, Bit2Archetypes__Validation_expression__c, Bit2Archetypes__Validation_message__c, Bit2Archetypes__Visualization_sequence__c, Bit2Archetypes__requestId__c from Bit2Archetypes__Archetype_Condition_Parameter__c",             
+            "operation" : "Upsert",
+            "externalId" : "Bit2Archetypes__External_Id__c"
+        }
+    ]
+}

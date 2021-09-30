@@ -1,0 +1,5 @@
+{
+    "commandDescription": "Create artifact folder with csv data that for external deployment tools",
+    "debugFlagDescription": "enables debug logging",
+    "timestampFlagDescription" : "append timestamp to artifact folder to manage uniqueness"
+  }
