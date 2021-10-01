@@ -3,6 +3,7 @@
 *.log
 *.csv
 archetypes/
+.vscode/
 /.nyc_output
 /dist
 /lib
