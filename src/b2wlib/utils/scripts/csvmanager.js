@@ -17,9 +17,12 @@ module.exports.getArchetypeStructure = async (b2wprojectpath = BASE_PROJECT_PATH
 }
 
 module.exports.recreateCSVForImport = async (b2wprojectpath = BASE_PROJECT_PATH,generateArtifact=false,timestamp=false) =>{
-    const filesMap = recreateCSVFromJSON(b2wprojectpath);
-    const outcsv = await writeExportCSVToFile(filesMap,generateArtifact,timestamp);
-
+    try{
+        const filesMap = recreateCSVFromJSON(b2wprojectpath);
+        const outcsv = await writeExportCSVToFile(filesMap,generateArtifact,timestamp);
+    }catch(ex){
+        logger.error(JSON.stringify(ex));
+    }
 }
 
 
@@ -98,32 +101,36 @@ function reparentRecords(csvJsonContents){
 
 function recreateCSVFromJSON(b2wprojectpath = BASE_PROJECT_PATH){
 
-    const archetypeFiles = readArchetypeFileOnSubDirs(b2wprojectpath);
-    const individualFilesMap = {};
-    for(const archetype of archetypeFiles){
-        delete archetype['name'];
-        for(const objectKey of Object.keys(archetype)){
-            if(individualFilesMap.hasOwnProperty(objectKey + ".csv")){
-                if(Array.isArray(archetype[objectKey])){
-                    if(archetype[objectKey].length>0){
-                        individualFilesMap[objectKey + ".csv"].push(...archetype[objectKey]);
+    try{
+        const archetypeFiles = readArchetypeFileOnSubDirs(b2wprojectpath);
+        const individualFilesMap = {};
+        for(const archetype of archetypeFiles){
+            delete archetype['name'];
+            for(const objectKey of Object.keys(archetype)){
+                if(individualFilesMap.hasOwnProperty(objectKey + ".csv")){
+                    if(Array.isArray(archetype[objectKey])){
+                        if(archetype[objectKey].length>0){
+                            individualFilesMap[objectKey + ".csv"].push(...archetype[objectKey]);
+                        }
+                    }else{
+                        individualFilesMap[objectKey + ".csv"].push(archetype[objectKey])
                     }
                 }else{
-                    individualFilesMap[objectKey + ".csv"].push(archetype[objectKey])
-                }
-            }else{
-                individualFilesMap[objectKey + ".csv"] = [];
-                if(Array.isArray(archetype[objectKey])){
-                    if(archetype[objectKey].length>0){
-                        individualFilesMap[objectKey + ".csv"].push(...archetype[objectKey]);
+                    individualFilesMap[objectKey + ".csv"] = [];
+                    if(Array.isArray(archetype[objectKey])){
+                        if(archetype[objectKey].length>0){
+                            individualFilesMap[objectKey + ".csv"].push(...archetype[objectKey]);
+                        }
+                    }else{
+                        individualFilesMap[objectKey + ".csv"].push(archetype[objectKey]);
                     }
-                }else{
-                    individualFilesMap[objectKey + ".csv"].push(archetype[objectKey]);
                 }
             }
         }
+        return individualFilesMap;
+    }catch(ex){
+        logger.error(JSON.stringify(ex));
     }
-    return individualFilesMap;
 }
 
 

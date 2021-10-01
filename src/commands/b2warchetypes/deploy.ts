@@ -34,7 +34,7 @@ export default class Deploy extends SfdxCommand{
             const debugLevel = this.flags.debug ? 'debug' : 'error';
 
             this.ux.startSpinner(`Deploying Bit2Win Archetypes to ${orgAlias}`);
-            const deployResult = await deploy(orgAlias,debugLevel);
+            await deploy(orgAlias,debugLevel);
             this.ux.stopSpinner();
         }catch(ex){
             throw new SfdxError(`An error as occurred : ${ex}` )

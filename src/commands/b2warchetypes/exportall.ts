@@ -34,7 +34,7 @@ export default class ExportAll extends SfdxCommand{
             const orgAlias = this.flags.orgalias;
             const debugLevel = this.flags.debug ? 'debug' : 'error';
             this.ux.startSpinner(`Extracting Bit2Win Archetypes from ${orgAlias}`);
-            const resultExport = await extract(orgAlias,debugLevel);
+            await extract(orgAlias,debugLevel);
             this.ux.stopSpinner();
         }catch(ex){
             throw new SfdxError(`An error as occurred : ${ex}` )

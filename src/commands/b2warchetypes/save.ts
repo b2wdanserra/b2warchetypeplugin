@@ -30,7 +30,7 @@ export default class Save extends SfdxCommand{
             const archetypeName = this.flags.name;
             const debugLevel = this.flags.debug ? 'debug' : 'error';
             this.ux.startSpinner(`Saving Bit2Win Archetype with name ${archetypeName}`);
-            const resultSave = save(archetypeName,debugLevel);
+            save(archetypeName,debugLevel);
             this.ux.stopSpinner();
         }catch(ex){
             throw new SfdxError(`An error as occurred : ${ex}` )

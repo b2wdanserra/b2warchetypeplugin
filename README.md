@@ -82,7 +82,7 @@ OPTIONS
   --json                                                                            format output as json
   --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level
 ```
-#### 3. CreateArtifact
+#### 4. CreateArtifact
 [`sfdx b2warchetypes:createartifact [-d] [-t] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#)
 ```
 Create artifact folder with csv data  for external deployment tools

@@ -120,19 +120,24 @@ module.exports.readFilesAsObject = readFilesAsObject;
 
 
 module.exports.readArchetypeFileOnSubDirs = (b2wprojectpath = constants.PROJECT_ROOT) =>{
-    const result = [];
-    const archetypeBaseFolderPath = `${b2wprojectpath}\\${constants.ARCHTYPE_FOLDER_NAME}`;
-    const folders = fs.readdirSync(archetypeBaseFolderPath);
-    folders.forEach((folderName)=>{
-        const archetypeBundleFiles = fs.readdirSync(archetypeBaseFolderPath +"\\"+ folderName);
-        archetypeBundleFiles.forEach((fileName)=>{
-            if(fileName===`${folderName}.json`){
-                const file = fs.readFileSync(archetypeBaseFolderPath + "\\" + folderName + "\\" + fileName,'utf-8');
-                result.push(JSON.parse(file));
-            }
-        })
-    });
-    return result
+    try{
+        const result = [];
+        const archetypeBaseFolderPath = `${b2wprojectpath}\\${constants.ARCHTYPE_FOLDER_NAME}`;
+        const folders = fs.readdirSync(archetypeBaseFolderPath);
+        folders.forEach((folderName)=>{
+            const archetypeBundleFiles = fs.readdirSync(archetypeBaseFolderPath +"\\"+ folderName);
+            archetypeBundleFiles.forEach((fileName)=>{
+                if(fileName===`${folderName}.json`){
+                    const file = fs.readFileSync(archetypeBaseFolderPath + "\\" + folderName + "\\" + fileName,'utf-8');
+                    result.push(JSON.parse(file));
+                }
+            })
+        });
+        return result
+    }catch(ex){
+            logger.error(ex);
+    }
+
 }
 
 module.exports.createArtifactDirectoryStructure = (path = constants.CURRENT_WORK_DIR,timestamp = false) =>{
