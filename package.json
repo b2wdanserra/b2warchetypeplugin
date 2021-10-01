@@ -3,7 +3,7 @@
   "description": "bit2win archetype manager plugin for sfdx projects",
   "version": "0.0.0",
   "author": "Francesco Imperioli",
-  "bugs": "https://github.com/fimperioli/b2warchetypeplugin/issues",
+  "bugs": "https://github.com/fimperioli-b2w/b2warchetypeplugin/issues",
   "dependencies": {
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1",
@@ -42,7 +42,7 @@
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json"
   ],
-  "homepage": "https://github.com/fimperioli/b2warchetypeplugin",
+  "homepage": "https://github.com/fimperioli-b2w/b2warchetypeplugin",
   "keywords": [
     "sfdx-plugin"
   ],
@@ -59,7 +59,7 @@
       "@oclif/plugin-help"
     ]
   },
-  "repository": "fimperioli/b2warchetypeplugin",
+  "repository": "fimperioli-b2w/b2warchetypeplugin",
   "scripts": {
     "lint": "tslint --project . --config tslint.json --format stylish",
     "postpack": "rimraf oclif.manifest.json",
