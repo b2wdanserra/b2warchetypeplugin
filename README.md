@@ -1,4 +1,4 @@
-b2warchetype
+b2warchetypes
 ============
 
 bit2win archetype manager plugin for sfdx projects
@@ -10,54 +10,89 @@ bit2win archetype manager plugin for sfdx projects
 [![Downloads/week](https://img.shields.io/npm/dw/b2warchetype.svg)](https://npmjs.org/package/b2warchetype)
 [![License](https://img.shields.io/npm/l/b2warchetype.svg)](https://github.com/fimperioli-b2w/b2warchetypeplugin/blob/master/package.json)
 
+
+# System requirement
+
+The functionality is released as a sfdx plugins. In order to work the following requirements must be met:
+
+1. Node installed
+2. yarn installed `npm install -g yarn`
+3. TypeScript installed `npm install -g typescript`
+4. Salesforce CLI 7.80 installed https://developer.salesforce.com/tools/sfdxcli. There are some known issues with the 7.90 version, please install a previous version
+5. Salesforce sfdx Data-Move-Utility plugin installed. Follow details here https://github.com/forcedotcom/SFDX-Data-Move-Utility
+
+
 # Installation
 ```sh-session
 $ npm install -g b2warchetype
-$ sfdx COMMAND
+$ sfdx b2warchetypes:COMMAND
 running command...
-$ sfdx (-v|--version|version)
-b2warchetype/0.0.0 win32-x64 node-v14.17.0
-$ sfdx --help [COMMAND]
+$ sfdx b2warchetypes --help [COMMAND]
 USAGE
-  $ sfdx COMMAND
+  $ sfdx b2warchetypes:COMMAND
 ...
 ```
-* [`sfdx hello:org [-n <string>] [-f] [-v <string>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-helloorg--n-string--f--v-string--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 
-## `sfdx hello:org [-n <string>] [-f] [-v <string>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-print a greeting and your org IDs
-
+# Commands
+#### 1. ExportAll
+[`sfdx b2warchetypes:exportall -a <string> [-d] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#)
 ```
-print a greeting and your org IDs
+Export All Archetypes source locally from passed sfdx org alias
 
 USAGE
-  $ sfdx hello:org [-n <string>] [-f] [-v <string>] [-u <string>] [--apiversion <string>] [--json] [--loglevel 
+  $ sfdx b2warchetypes:exportall -a <string> [-d] [--json] [--loglevel
   trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
 
 OPTIONS
-  -f, --force                                                                       example boolean flag
-  -n, --name=name                                                                   name to print
-
-  -u, --targetusername=targetusername                                               username or alias for the target
-                                                                                    org; overrides default target org
-
-  -v, --targetdevhubusername=targetdevhubusername                                   username or alias for the dev hub
-                                                                                    org; overrides default dev hub org
-
-  --apiversion=apiversion                                                           override the api version used for
-                                                                                    api requests made by this command
-
+  -a, --orgalias=orgalias                                                           (req) Alias of the source
+                                                                                    organization
+  -d, --debug                                                                       enables debug logging
   --json                                                                            format output as json
+  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level
+```
+#### 2. Save
+[`sfdx b2warchetypes:save -n <string> [-d] [--json] [--loglevel
+  trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#)
+```
+Save archetype bundle locally
 
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
+USAGE
+  $ sfdx b2warchetypes:save -n <string> [-d] [--json] [--loglevel
+  trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
 
-EXAMPLES
-  $ sfdx hello:org --targetusername myOrg@example.com --targetdevhubusername devhub@org.com
-     Hello world! This is org: MyOrg and I will be around until Tue Mar 20 2018!
-     My hub org id is: 00Dxx000000001234
-  
-  $ sfdx hello:org --name myname --targetusername myOrg@example.com
-     Hello myname! This is org: MyOrg and I will be around until Tue Mar 20 2018!
+OPTIONS
+  -d, --debug                                                                       enables debug logging
+  -n, --name=name                                                                   (req) Name of the archetype
+  --json                                                                            format output as json
+  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level
+```
+#### 3. Deploy
+[`sfdx b2warchetypes:deploy -a <string> [-d] [--json] [--loglevel
+  trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#)
+```
+Deploy bit2win archetypes to target sfdx organization as data
+
+USAGE
+  $ sfdx b2warchetypes:deploy -a <string> [-d] [--json] [--loglevel
+  trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+
+OPTIONS
+  -a, --orgalias=orgalias                                           (req) Alias of the target organization
+  -d, --debug                                                                       enables debug logging
+  --json                                                                            format output as json
+  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level
+```
+#### 3. CreateArtifact
+[`sfdx b2warchetypes:createartifact [-d] [-t] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#)
+```
+Create artifact folder with csv data  for external deployment tools
+
+USAGE
+  $ sfdx b2warchetypes:createartifact [-d] [-t] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+
+OPTIONS
+  -d, --debug                                           enables debug logging
+  -t, --timestamp                                       append timestamp to artifact folder to manage uniqueness
+  --json                                                format output as json
+  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level
 ```
