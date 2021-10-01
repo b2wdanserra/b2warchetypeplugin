@@ -24,7 +24,7 @@ The functionality is released as a sfdx plugins. In order to work the following 
 
 # Installation
 ```sh-session
-$ npm install -g b2warchetype
+$ sfdx plugins:install sfdmu
 $ sfdx b2warchetypes:COMMAND
 running command...
 $ sfdx b2warchetypes --help [COMMAND]
