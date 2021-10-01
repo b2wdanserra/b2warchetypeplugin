@@ -3,7 +3,7 @@ b2warchetypes
 
 bit2win archetype manager plugin for sfdx projects
 
-[![Version](https://img.shields.io/npm/v/b2warchetype.svg)](https://npmjs.org/package/b2warchetype)
+[![Version](https://img.shields.io/npm/v/b2warchetype.svg)](https://www.npmjs.com/package/b2warchetype)
 <!--[![Appveyor CI](https://ci.appveyor.com/api/projects/status/github/fimperioli-b2w/b2warchetypeplugin?branch=master&svg=true)](https://ci.appveyor.com/project/heroku/b2warchetypeplugin/branch/master)
 [![Codecov](https://codecov.io/gh/fimperioli-b2w/b2warchetypeplugin/branch/master/graph/badge.svg)](https://codecov.io/gh/fimperioli-b2w/b2warchetypeplugin)-->
 [![Greenkeeper](https://badges.greenkeeper.io/fimperioli-b2w/b2warchetypeplugin.svg)](https://greenkeeper.io/)
