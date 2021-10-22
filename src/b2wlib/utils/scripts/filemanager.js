@@ -62,8 +62,7 @@ module.exports.updateArchetypeFile = (archetypeName,b2wprojectpath = constants.P
         const oldConditions = _.groupBy(archetypeJsonFile[constants.CONDITION_OBJECT_KEY],'Id');
         const oldColumnConditions = _.groupBy(archetypeJsonFile[constants.COLUMN_COND_OBJECT_KEY],'Bit2Archetypes__Archetype_Condition__c');
         const oldColumnActions = _.groupBy(archetypeJsonFile[constants.COLUMN_ACT_OBJECT_KEY],'Bit2Archetypes__Archetype_Action__c');
-    
-    
+
     
         //getting variables by condition notation
         let fullConditionVariablesPath = "";
@@ -85,7 +84,8 @@ module.exports.updateArchetypeFile = (archetypeName,b2wprojectpath = constants.P
             oldColumnConditions[currentCondId][0].Bit2Archetypes__Object_Mapping__c = currentCondVariablesPath;
             
         }
-    
+        
+
         //updating actions
         for(const sKey of Object.keys(steps)){
             const currentStepId = sKey.substring(sKey.lastIndexOf('_')+1,sKey.lastIndexOf('.js'));
@@ -93,13 +93,13 @@ module.exports.updateArchetypeFile = (archetypeName,b2wprojectpath = constants.P
             oldSteps[currentStepId][0].Bit2Archetypes__Action_Objs__c = fullConditionVariables;
             oldColumnActions[oldSteps[currentStepId][0].Bit2Archetypes__Archetype_Action__c][0].Bit2Archetypes__Object_Mapping__c = fullConditionVariablesPath;
         }
+        
     
-    
-    
-        const newSteps = Object.values(oldSteps)[0];
-        const newConds = Object.values(oldConditions)[0];
-        const newColConds = Object.values(oldColumnConditions)[0];
-        const newColActs = Object.values(oldColumnActions)[0];
+        //TODO: fix this
+        const newSteps = [].concat.apply([], Object.values(oldSteps));
+        const newConds = [].concat.apply([], Object.values(oldConditions));
+        const newColConds = [].concat.apply([], Object.values(oldColumnConditions));
+        const newColActs = [].concat.apply([], Object.values(oldColumnActions));
     
         const newJsonArchetype = {
             ...archetypeJsonFile,
