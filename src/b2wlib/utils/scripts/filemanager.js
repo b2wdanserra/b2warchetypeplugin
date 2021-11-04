@@ -33,7 +33,7 @@ module.exports.populateArchetypeBundleFolder = (archetypeBaseFolderPath,bundleDa
         //creating steps files
         for(const step of bundle.Bit2Archetypes__Archetype_Action_Step__c){
             const stepContent = String(step.Bit2Archetypes__Template__c);
-            fs.writeFileSync(`${archetypeBaseFolderPath}\\${bundle.name}\\steps\\${step.Name}_${step.Id}.js`,stepContent);
+            fs.writeFileSync(`${archetypeBaseFolderPath}\\${bundle.name}\\steps\\${step.Name}_${step.Bit2Archetypes__External_Id__c}.js`,stepContent);
         }
 
         //creating condition files
