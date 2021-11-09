@@ -2,11 +2,12 @@ const csv = require('csvtojson');
 const {parseAsync} = require('json2csv');
 const fs = require('fs');
 const _ = require('lodash');
+const {join} = require('path');
 const logger = require('../logger');
 const constants = require('../../constants');
 const {readFilesAsObject,readArchetypeFileOnSubDirs,createArtifactDirectoryStructure} = require('./filemanager');
-const EXTRACTED_FILE_PATH = `${constants.PROJECT_ROOT}\\util_data\\target\\`;
-const IMPORT_PROJECT_PATH = `${constants.PROJECT_ROOT}\\util_data\\import\\`
+const EXTRACTED_FILE_PATH = join(constants.PROJECT_ROOT,'util_data','target');
+const IMPORT_PROJECT_PATH = join(constants.PROJECT_ROOT,'util_data','import');
 const BASE_PROJECT_PATH = constants.PROJECT_ROOT;
 
 
@@ -156,7 +157,7 @@ async function generateArtifactCSVStructures(jsonfileMap,timestamp){
     try{
         const artifactPath = createArtifactDirectoryStructure(constants.CURRENT_WORK_DIR,timestamp);
         logger.debug(`Artifact Structure Created --> ${artifactPath}`);
-        fs.copyFileSync(`${IMPORT_PROJECT_PATH}\\export.json`,`${artifactPath}\\export.json`);
+        fs.copyFileSync(join(IMPORT_PROJECT_PATH,'export.json'),join(artifactPath,'export.json'));
         const csvWriteResult = await writeCSV(jsonfileMap,artifactPath);
     }catch(ex){
         logger.error(JSON.stringify(ex));
@@ -169,7 +170,7 @@ async function writeCSV(jsonFileMap,path){
     logger.debug('Starting csv writing...');
     for(const jsonMapKey of Object.keys(jsonFileMap)){
         const csv = await parseAsync(jsonFileMap[jsonMapKey]);
-        const out = fs.writeFile(`${path}\\${jsonMapKey}`,csv,(err)=>{
+        const out = fs.writeFile(join(path,jsonMapKey),csv,(err)=>{
             if(err){
                 logger.error(err);
             }

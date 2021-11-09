@@ -1,6 +1,7 @@
 const constants = require('../../constants');
 const archetypemanager = require('../b2w/archetypemanager');
 const fs = require('fs');
+const {join} = require('path');
 const _ = require('lodash');
 const logger = require('../logger');
 
@@ -8,13 +9,13 @@ const logger = require('../logger');
 
 
 module.exports.createArchetypeBundleDirectories = async (archetypeData,b2wprojectpath = constants.PROJECT_ROOT)=>{
-    const archetypeBaseFolderPath = `${b2wprojectpath}\\${constants.ARCHTYPE_FOLDER_NAME}`;
+    const archetypeBaseFolderPath = join(b2wprojectpath,constants.ARCHTYPE_FOLDER_NAME);
     //create archetype base folder
     createDirectoryIfNotExists(archetypeBaseFolderPath);
     if(archetypeData){
         //creating subfolder if archetype data is already downloaded
         for(const arch of archetypeData){
-            createDirectoryIfNotExists(`${archetypeBaseFolderPath}\\${arch.name}`);
+            createDirectoryIfNotExists(join(archetypeBaseFolderPath,arch.name));
         }
     }
     return archetypeBaseFolderPath;
@@ -24,22 +25,22 @@ module.exports.populateArchetypeBundleFolder = (archetypeBaseFolderPath,bundleDa
     for(const bundle of bundleData){
 
         // creating bundle subdirs
-        createDirectoryIfNotExists(`${archetypeBaseFolderPath}\\${bundle.name}\\conditions`);
-        createDirectoryIfNotExists(`${archetypeBaseFolderPath}\\${bundle.name}\\steps`);
+        createDirectoryIfNotExists(join(archetypeBaseFolderPath,bundle.name,'conditions'));
+        createDirectoryIfNotExists(join(archetypeBaseFolderPath,bundle.name,'steps'));
 
         // creating json file first
-        fs.writeFileSync(`${archetypeBaseFolderPath}\\${bundle.name}\\${bundle.name}.json`,JSON.stringify(bundle,null,"\t"));
+        fs.writeFileSync(join(archetypeBaseFolderPath,bundle.name,`${bundle.name}.json`),JSON.stringify(bundle,null,"\t"));
 
         //creating steps files
         for(const step of bundle.Bit2Archetypes__Archetype_Action_Step__c){
             const stepContent = String(step.Bit2Archetypes__Template__c);
-            fs.writeFileSync(`${archetypeBaseFolderPath}\\${bundle.name}\\steps\\${step.Name}_${step.Bit2Archetypes__External_Id__c}.js`,stepContent);
+            fs.writeFileSync(join(archetypeBaseFolderPath,bundle.name,'steps',`${step.Name}_${step.Bit2Archetypes__External_Id__c}.js`),stepContent);
         }
 
         //creating condition files
         for(const cond of bundle.Bit2Archetypes__Archetype_Condition__c){
             const conditionContent = String(cond.Bit2Archetypes__Template__c);
-            fs.writeFileSync(`${archetypeBaseFolderPath}\\${bundle.name}\\conditions\\${cond.Bit2Archetypes__Label__c}_${cond.Id}.txt`,conditionContent);
+            fs.writeFileSync(join(archetypeBaseFolderPath,bundle.name,'conditions',`${cond.Bit2Archetypes__Label__c}_${cond.Id}.txt`),conditionContent);
         }
     }
 }
@@ -48,11 +49,11 @@ module.exports.populateArchetypeBundleFolder = (archetypeBaseFolderPath,bundleDa
 module.exports.updateArchetypeFile = (archetypeName,b2wprojectpath = constants.PROJECT_ROOT) => {
 
     try{
-        const archetypeFolderName = `${b2wprojectpath}\\${constants.ARCHTYPE_FOLDER_NAME}\\${archetypeName}`;
-        const archetypeConditionsFolderName = `${b2wprojectpath}\\${constants.ARCHTYPE_FOLDER_NAME}\\${archetypeName}\\conditions\\`;
-        const archetypeStepsFolderName = `${b2wprojectpath}\\${constants.ARCHTYPE_FOLDER_NAME}\\${archetypeName}\\steps\\`;
+        const archetypeFolderName = join(b2wprojectpath,constants.ARCHTYPE_FOLDER_NAME,archetypeName); //`${b2wprojectpath}\\${constants.ARCHTYPE_FOLDER_NAME}\\${archetypeName}`;
+        const archetypeConditionsFolderName = join(b2wprojectpath,constants.ARCHTYPE_FOLDER_NAME,archetypeName,'conditions');
+        const archetypeStepsFolderName = join(b2wprojectpath,constants.ARCHTYPE_FOLDER_NAME,archetypeName,'steps');
     
-        const archetypeJsonFileName = `${archetypeFolderName}\\${archetypeName}.json`;
+        const archetypeJsonFileName = join(archetypeFolderName,`${archetypeName}.json`);
         const archetypeJsonFile = JSON.parse(fs.readFileSync(archetypeJsonFileName));
     
         //read the conditions and steps file, then modify the original json
@@ -122,13 +123,13 @@ module.exports.readFilesAsObject = readFilesAsObject;
 module.exports.readArchetypeFileOnSubDirs = (b2wprojectpath = constants.PROJECT_ROOT) =>{
     try{
         const result = [];
-        const archetypeBaseFolderPath = `${b2wprojectpath}\\${constants.ARCHTYPE_FOLDER_NAME}`;
+        const archetypeBaseFolderPath = join(b2wprojectpath,constants.ARCHTYPE_FOLDER_NAME); //`${b2wprojectpath}\\${constants.ARCHTYPE_FOLDER_NAME}`;
         const folders = fs.readdirSync(archetypeBaseFolderPath);
         folders.forEach((folderName)=>{
-            const archetypeBundleFiles = fs.readdirSync(archetypeBaseFolderPath +"\\"+ folderName);
+            const archetypeBundleFiles = fs.readdirSync(join(archetypeBaseFolderPath,folderName));
             archetypeBundleFiles.forEach((fileName)=>{
                 if(fileName===`${folderName}.json`){
-                    const file = fs.readFileSync(archetypeBaseFolderPath + "\\" + folderName + "\\" + fileName,'utf-8');
+                    const file = fs.readFileSync(join(archetypeBaseFolderPath,folderName,fileName),'utf-8');
                     result.push(JSON.parse(file));
                 }
             })
@@ -143,12 +144,12 @@ module.exports.readArchetypeFileOnSubDirs = (b2wprojectpath = constants.PROJECT_
 module.exports.createArtifactDirectoryStructure = (path = constants.CURRENT_WORK_DIR,timestamp = false) =>{
     try{
         const rootArtifactFolderPath = timestamp 
-        ? `${path}\\${constants.ARTIFACT_FOLDER_PREFIX}_${new Date().getTime()}` 
-        : `${path}\\${constants.ARTIFACT_FOLDER_PREFIX}`;
+        ? join(path,`${constants.ARTIFACT_FOLDER_PREFIX}_${new Date().getTime()}`)
+        : join(path,constants.ARTIFACT_FOLDER_PREFIX);
         
-        const logDirectoryPath = `${rootArtifactFolderPath}\\logs`;
-        const sourceDirectoryPath = `${rootArtifactFolderPath}\\source`;
-        const targetDirectoryPath = `${rootArtifactFolderPath}\\target`; 
+        const logDirectoryPath = join(rootArtifactFolderPath,'logs');
+        const sourceDirectoryPath = join(rootArtifactFolderPath,'source');
+        const targetDirectoryPath = join(rootArtifactFolderPath,'target'); 
         //creating the directory structure
         createDirectoryIfNotExists(rootArtifactFolderPath);
         createDirectoryIfNotExists(logDirectoryPath);
@@ -173,7 +174,7 @@ function readFilesAsObject(dirname){
     const rawFileData = {};
     const fileNames = fs.readdirSync(dirname);
     fileNames.forEach((fileName)=>{
-        const file = fs.readFileSync(dirname + fileName,'utf-8');
+        const file = fs.readFileSync(join(dirname,fileName),'utf-8');
         rawFileData[fileName] = file;
     });
     return rawFileData;
