@@ -6,9 +6,9 @@ const {join} = require('path');
 const logger = require('../logger');
 const constants = require('../../constants');
 const {readFilesAsObject,readArchetypeFileOnSubDirs,createArtifactDirectoryStructure} = require('./filemanager');
-const EXTRACTED_FILE_PATH = join(constants.PROJECT_ROOT,'util_data','target');
-const IMPORT_PROJECT_PATH = join(constants.PROJECT_ROOT,'util_data','import');
-const BASE_PROJECT_PATH = constants.PROJECT_ROOT;
+const EXTRACTED_FILE_PATH = join(constants.UTIL_DATA_BASE_FOLDER,'util_data','target');
+const IMPORT_PROJECT_PATH = join(constants.UTIL_DATA_BASE_FOLDER,'util_data','import');
+const BASE_PROJECT_PATH = constants.UTIL_DATA_BASE_FOLDER;
 
 
 module.exports.getArchetypeStructure = async (b2wprojectpath = BASE_PROJECT_PATH)=>{

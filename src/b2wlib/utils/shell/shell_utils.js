@@ -4,8 +4,8 @@ const constants = require('../../constants');
 const {join} = require('path');
 const logger = require('../logger');
 
-const UTIL_DATA_FOLDER = join(constants.PROJECT_ROOT,'util_data');
-const UTIL_IMPORT_FOLDER = join(constants.PROJECT_ROOT,'util_data','import');
+const UTIL_DATA_FOLDER = join(constants.UTIL_DATA_BASE_FOLDER,'util_data');
+const UTIL_IMPORT_FOLDER = join(constants.UTIL_DATA_BASE_FOLDER,'util_data','import');
 
 module.exports.extractArchetypeFiles = async (orgname) => {
     try{

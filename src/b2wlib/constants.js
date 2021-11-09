@@ -1,5 +1,8 @@
+const {join} = require('path');
+
 module.exports = {
     "PROJECT_ROOT" : __dirname,
+    "UTIL_DATA_BASE_FOLDER" : join(__dirname,'..','..','src','b2wlib'),
     "CURRENT_WORK_DIR" : process.cwd(),
     "ARCHTYPE_FOLDER_NAME" : "archetypes",
     "ARCHTYPE_OBJECT_KEY" : "Bit2Archetypes__Archetype__c",

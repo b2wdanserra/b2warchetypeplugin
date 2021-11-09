@@ -1,7 +1,7 @@
 {
   "name": "b2warchetype",
   "description": "bit2win archetype manager plugin for sfdx projects",
-  "version": "0.0.7",
+  "version": "0.0.12",
   "author": "Francesco Imperioli",
   "bugs": "https://github.com/fimperioli-b2w/b2warchetypeplugin/issues",
   "dependencies": {
@@ -41,6 +41,7 @@
     "node": ">=8.0.0"
   },
   "files": [
+    "/src/b2wlib/util_data",
     "/lib",
     "/messages",
     "/npm-shrinkwrap.json",
