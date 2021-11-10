@@ -59,8 +59,8 @@ module.exports.updateArchetypeFile = (archetypeName,b2wprojectpath = constants.P
         //read the conditions and steps file, then modify the original json
         const steps = readFilesAsObject(archetypeStepsFolderName);
         const conditions = readFilesAsObject(archetypeConditionsFolderName);
-        const oldSteps = _.groupBy(archetypeJsonFile[constants.ACTION_STEP_OBJECT_KEY],'Id');
-        const oldConditions = _.groupBy(archetypeJsonFile[constants.CONDITION_OBJECT_KEY],'Id');
+        const oldSteps = _.groupBy(archetypeJsonFile[constants.ACTION_STEP_OBJECT_KEY],'Bit2Archetypes__External_Id__c');
+        const oldConditions = _.groupBy(archetypeJsonFile[constants.CONDITION_OBJECT_KEY],'Bit2Archetypes__External_Id__c');
         const oldColumnConditions = _.groupBy(archetypeJsonFile[constants.COLUMN_COND_OBJECT_KEY],'Bit2Archetypes__Archetype_Condition__c');
         const oldColumnActions = _.groupBy(archetypeJsonFile[constants.COLUMN_ACT_OBJECT_KEY],'Bit2Archetypes__Archetype_Action__c');
 
