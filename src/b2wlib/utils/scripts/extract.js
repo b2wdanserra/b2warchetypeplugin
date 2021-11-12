@@ -4,6 +4,8 @@ const shell_utils = require('../shell/shell_utils');
 const constants = require('../../constants');
 const sfdxutils = require('./sfdxutils');
 const logger = require('../logger');
+const {printError} = require('../utility');
+
 
 module.exports = async function(orgAlias = constants.ORG_ALIAS,logLevel,projectPath = constants.CURRENT_WORK_DIR){
     try{
@@ -14,7 +16,7 @@ module.exports = async function(orgAlias = constants.ORG_ALIAS,logLevel,projectP
         const baseFolderPath = await filemanager.createArchetypeBundleDirectories(archStructure,projectPath);
         filemanager.populateArchetypeBundleFolder(baseFolderPath,archStructure);
     }catch(ex){
-        logger.error(JSON.stringify(ex));
+        logger.error(printError(ex));
         throw new Error(ex.message);
     }
 }

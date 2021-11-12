@@ -4,6 +4,8 @@ const fs = require('fs');
 const {join} = require('path');
 const _ = require('lodash');
 const logger = require('../logger');
+const { v4: uuidv4 } = require('uuid');
+const UuidEncoder = require('uuid-encoder');
 
 
 
@@ -23,6 +25,8 @@ module.exports.createArchetypeBundleDirectories = async (archetypeData,b2wprojec
 
 module.exports.populateArchetypeBundleFolder = (archetypeBaseFolderPath,bundleData)=>{
     for(const bundle of bundleData){
+
+        logger.debug(`Processing archetype bundle with name: ${bundle.name}`)
 
         // creating bundle subdirs
         createDirectoryIfNotExists(join(archetypeBaseFolderPath,bundle.name,'conditions'));
@@ -164,6 +168,39 @@ module.exports.createArtifactDirectoryStructure = (path = constants.CURRENT_WORK
 }
 
 
+module.exports.createArchetypeBoilerplate = (path = constants.CURRENT_WORK_DIR,opts) => {
+    
+    //generating ids for the new boilerplate
+    const archExtId = generatebase16UUID();
+    const columnCondExtId = generatebase16UUID();
+    const columnActExtId = generatebase16UUID();
+    const condExtId = generatebase16UUID();
+    const actExtId = generatebase16UUID();
+    const stepExtId = generatebase16UUID();
+
+
+    if(!opts){
+        opts = {
+            archetypename : 'new_archetype',
+            recordtypeid : 'test',
+            stepname : 'action_step_1',
+            agendagroup : 'agAlways',
+            conditionname : 'condition_1',
+            actionname : 'action_1', 
+        }
+    }
+    //adding the generated ids to the options
+    opts = {...opts,archExtId,columnCondExtId,columnActExtId,condExtId,actExtId,stepExtId};
+    const archetypeJson = archetypemanager.generateArchetypeJsonBoilerPlate(opts);
+
+    //creating the files and folders
+    const archetypeBaseFolder = join(path,'archetypes');
+    const archetypeFolder = join(archetypeBaseFolder,opts.archetypename);
+    createDirectoryIfNotExists(archetypeFolder);
+    this.populateArchetypeBundleFolder(archetypeBaseFolder,[archetypeJson]);
+}
+
+
 function createDirectoryIfNotExists (dirpath){
     if(!fs.existsSync(dirpath)){
         fs.mkdirSync(dirpath);
@@ -179,3 +216,11 @@ function readFilesAsObject(dirname){
     });
     return rawFileData;
 }
+
+
+function generatebase16UUID(){
+    const encoder = new UuidEncoder('base16');
+    return encoder.encode(uuidv4());
+}
+
+
