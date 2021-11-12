@@ -111,19 +111,23 @@ function recreateCSVFromJSON(b2wprojectpath = BASE_PROJECT_PATH){
                 if(individualFilesMap.hasOwnProperty(objectKey + ".csv")){
                     if(Array.isArray(archetype[objectKey])){
                         if(archetype[objectKey].length>0){
-                            individualFilesMap[objectKey + ".csv"].push(...archetype[objectKey]);
+                            for(const archObj of archetype[objectKey]){
+                                individualFilesMap[objectKey + ".csv"].push(manipulateJsonForCSVReExport(archObj));
+                            }      
                         }
                     }else{
-                        individualFilesMap[objectKey + ".csv"].push(archetype[objectKey])
+                        individualFilesMap[objectKey + ".csv"].push(manipulateJsonForCSVReExport(archetype[objectKey]))
                     }
                 }else{
                     individualFilesMap[objectKey + ".csv"] = [];
                     if(Array.isArray(archetype[objectKey])){
                         if(archetype[objectKey].length>0){
-                            individualFilesMap[objectKey + ".csv"].push(...archetype[objectKey]);
+                            for(const archObj of archetype[objectKey]){
+                                individualFilesMap[objectKey + ".csv"].push(manipulateJsonForCSVReExport(archObj));
+                            }   
                         }
                     }else{
-                        individualFilesMap[objectKey + ".csv"].push(archetype[objectKey]);
+                        individualFilesMap[objectKey + ".csv"].push(manipulateJsonForCSVReExport(archetype[objectKey]));
                     }
                 }
             }
@@ -134,6 +138,20 @@ function recreateCSVFromJSON(b2wprojectpath = BASE_PROJECT_PATH){
     }
 }
 
+
+function manipulateJsonForCSVReExport(recordJson){
+    const resultCopy = {...recordJson};
+    for(const okey of Object.keys(recordJson)){
+        if(typeof recordJson[okey]==='object'){
+            delete resultCopy[okey];
+            let subObjSingleKey = Object.keys(recordJson[okey])[0];
+            let newKey = `${okey}.${subObjSingleKey}`;
+            resultCopy[newKey] = recordJson[okey][subObjSingleKey];
+        }
+    }
+    logger.debug(`Current manipulated json archetype for export : ${JSON.stringify(resultCopy)}`)
+    return resultCopy;
+}
 
 async function writeExportCSVToFile(jsonFileMap,generateArtifact,timestamp=false){
 
@@ -168,6 +186,7 @@ async function generateArtifactCSVStructures(jsonfileMap,timestamp){
 
 async function writeCSV(jsonFileMap,path){
     logger.debug('Starting csv writing...');
+    logger.debug(`currentJSON fileMap ${JSON.stringify(jsonFileMap)}`);
     for(const jsonMapKey of Object.keys(jsonFileMap)){
         const csv = await parseAsync(jsonFileMap[jsonMapKey]);
         const out = fs.writeFile(join(path,jsonMapKey),csv,(err)=>{
