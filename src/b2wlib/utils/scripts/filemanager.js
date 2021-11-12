@@ -40,7 +40,7 @@ module.exports.populateArchetypeBundleFolder = (archetypeBaseFolderPath,bundleDa
         //creating condition files
         for(const cond of bundle.Bit2Archetypes__Archetype_Condition__c){
             const conditionContent = String(cond.Bit2Archetypes__Template__c);
-            fs.writeFileSync(join(archetypeBaseFolderPath,bundle.name,'conditions',`${cond.Bit2Archetypes__Label__c}_${cond.Id}.txt`),conditionContent);
+            fs.writeFileSync(join(archetypeBaseFolderPath,bundle.name,'conditions',`${cond.Bit2Archetypes__Label__c}_${cond.Bit2Archetypes__External_Id__c}.txt`),conditionContent);
         }
     }
 }
