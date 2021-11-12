@@ -1,0 +1,7 @@
+{
+    "commandDescription": "Create a boilerplate for a new archetype with a single conditions and a single action step",
+    "orgAliasFlagDescription": "Alias of the source organization",
+    "nameFlagDescription": "The name of the newly created archetype",
+    "agendaGroupFlagDescription" : "The name of the agenda group for this archetype",
+    "debugFlagDescription": "enables debug logging"
+  }
