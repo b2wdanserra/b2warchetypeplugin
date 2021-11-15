@@ -171,7 +171,16 @@ async function generateArtifactCSVStructures(jsonfileMap,timestamp){
     try{
         const artifactPath = createArtifactDirectoryStructure(constants.CURRENT_WORK_DIR,timestamp);
         logger.debug(`Artifact Structure Created --> ${artifactPath}`);
+
+        //copying the export.json
         fs.copyFileSync(join(IMPORT_PROJECT_PATH,'export.json'),join(artifactPath,'export.json'));
+
+
+        //copying the recordtype files
+        const rtFileNameSrc = join(EXTRACTED_FILE_PATH,'RecordType.csv');
+        const rtFileNameTarget = join(artifactPath,'RecordType.csv');
+        fs.copyFileSync(rtFileNameSrc,rtFileNameTarget);
+
         const csvWriteResult = await writeCSV(jsonfileMap,artifactPath);
     }catch(ex){
         logger.error(JSON.stringify(ex));
