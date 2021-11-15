@@ -156,15 +156,11 @@ function manipulateJsonForCSVReExport(recordJson){
 async function writeExportCSVToFile(jsonFileMap,generateArtifact,timestamp=false){
 
     if(!generateArtifact){
-        // for(const jsonMapKey of Object.keys(jsonFileMap)){
-        //     const csv = await parseAsync(jsonFileMap[jsonMapKey]);
-        //     const out = fs.writeFile(`${IMPORT_PROJECT_PATH}\\${jsonMapKey}`,csv,(err)=>{
-        //         if(err){
-        //             logger.error(JSON.stringify(err));
-        //         }
-        //     });
-        // }
         const csvWriteResult = await writeCSV(jsonFileMap,IMPORT_PROJECT_PATH);
+        //moving the recordtype file which is needed for import
+        const rtFileNameSrc = join(EXTRACTED_FILE_PATH,'RecordType.csv');
+        const rtFileNameTarget = join(IMPORT_PROJECT_PATH,'RecordType.csv');
+        fs.copyFileSync(rtFileNameSrc,rtFileNameTarget);
     }else{
         generateArtifactCSVStructures(jsonFileMap,timestamp);
     }
