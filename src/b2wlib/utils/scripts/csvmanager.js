@@ -177,7 +177,7 @@ async function generateArtifactCSVStructures(jsonfileMap,timestamp){
 
 
         //copying the recordtype files
-        const rtFileNameSrc = join(IMPORT_PROJECT_PATH,'RecordType.csv');
+        const rtFileNameSrc = join(EXTRACTED_FILE_PATH,'RecordType.csv');
         const rtFileNameTarget = join(artifactPath,'RecordType.csv');
         fs.copyFileSync(rtFileNameSrc,rtFileNameTarget);
 
