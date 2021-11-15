@@ -33,7 +33,7 @@ module.exports.extractVariablesFromConditions = (conditionCode) => {
 }
 
 module.exports.generatePlaceHolderActionStep = () => {
-    return `/*this a boilerplate action step, plase modify step and condition accordingly to your needs*/\nmodify({%con%}, function(){\n});`;
+    return `/*this a boilerplate action step, plase modify step and condition accordingly to your needs*/\nmodify({%con%}, function(){\n\tconsole.log('test');\n});`;
 }
 module.exports.generatePlaceHolderCondition = ()=>{
     return `{%con%} : contextdata;\n`
@@ -43,7 +43,7 @@ module.exports.generateArchetypeJsonBoilerPlate = (opts) => {
 
     const {
         archetypename,
-        recordtypeid,
+        recordtypes,
         stepname,
         agendagroup,
         conditionname,
@@ -61,8 +61,8 @@ module.exports.generateArchetypeJsonBoilerPlate = (opts) => {
     return {
         "name": archetypename,
         "Bit2Archetypes__Archetype__c": {
-            "Id": "",
-            "RecordTypeId": recordtypeid,
+            "Id": archExtId,
+            "RecordTypeId": recordtypes['Bit2Archetypes__Archetype__c'],
             "Bit2Archetypes__Archetype_Process__c": "Live",
             "Bit2Archetypes__Archetype_Script__c": "",
             "Bit2Archetypes__External_Id__c": archExtId,
@@ -78,9 +78,9 @@ module.exports.generateArchetypeJsonBoilerPlate = (opts) => {
         },
         "Bit2Archetypes__Archetype_Column_Condition__c": [
             {
-                "Id": "",
-                "Bit2Archetypes__Archetype__c": "",
-                "Bit2Archetypes__Archetype_Condition__c": "",
+                "Id": columnCondExtId,
+                "Bit2Archetypes__Archetype__c": archExtId,
+                "Bit2Archetypes__Archetype_Condition__c": condExtId,
                 "Bit2Archetypes__External_Id__c": columnCondExtId,
                 "Bit2Archetypes__Synchronization_Sequence__c": "0",
                 "Bit2Archetypes__Visualization_Sequence__c": "0",
@@ -95,9 +95,9 @@ module.exports.generateArchetypeJsonBoilerPlate = (opts) => {
         ],
         "Bit2Archetypes__Archetype_Column_Action__c": [
             {
-                "Id": "",
-                "Bit2Archetypes__Archetype__c": "",
-                "Bit2Archetypes__Archetype_Action__c": "",
+                "Id": columnActExtId,
+                "Bit2Archetypes__Archetype__c": archExtId,
+                "Bit2Archetypes__Archetype_Action__c": actExtId,
                 "Bit2Archetypes__External_Id__c": columnActExtId,
                 "Bit2Archetypes__Synchronization_Sequence__c": "0",
                 "Bit2Archetypes__Visualization_Sequence__c": "0",
@@ -112,7 +112,8 @@ module.exports.generateArchetypeJsonBoilerPlate = (opts) => {
         ],
         "Bit2Archetypes__Archetype_Action__c": [
             {
-                "Id": "",
+                "Id": actExtId,
+                "RecordTypeId" : recordtypes['Bit2Archetypes__Archetype_Action__c'],
                 "Bit2Archetypes__External_Id__c": actExtId,
                 "Bit2Archetypes__Label__c": actionname,
                 "Bit2Archetypes__Name__c": actionname,
@@ -121,7 +122,8 @@ module.exports.generateArchetypeJsonBoilerPlate = (opts) => {
         ],
         "Bit2Archetypes__Archetype_Condition__c": [
             {
-                "Id": "",
+                "Id": condExtId,
+                "RecordTypeId" : recordtypes['Bit2Archetypes__Archetype_Condition__c'],
                 "Bit2Archetypes__External_Id__c": condExtId,
                 "Bit2Archetypes__Label__c": conditionname,
                 "Bit2Archetypes__Name__c": conditionname,
@@ -136,8 +138,9 @@ module.exports.generateArchetypeJsonBoilerPlate = (opts) => {
         "Bit2Archetypes__Archetype_Condition_Parameter__c": [],
         "Bit2Archetypes__Archetype_Action_Step__c": [
             {
-                "Id": "",
-                "Bit2Archetypes__Archetype_Action__c": "",
+                "Id": stepExtId,
+                "RecordTypeId" : recordtypes['Bit2Archetypes__Archetype_Action_Step__c'],
+                "Bit2Archetypes__Archetype_Action__c": actExtId,
                 "Name": stepname,
                 "Bit2Archetypes__Execution_sequence__c": "1",
                 "Bit2Archetypes__External_Id__c": stepExtId,

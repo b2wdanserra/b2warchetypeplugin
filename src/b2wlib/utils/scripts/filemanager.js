@@ -178,11 +178,20 @@ module.exports.createArchetypeBoilerplate = (path = constants.CURRENT_WORK_DIR,o
     const actExtId = generatebase16UUID();
     const stepExtId = generatebase16UUID();
 
+    //managing rts
+    const {recordtypes} = opts;
+    const rtMapping = {};
+    for(const rt of recordtypes){
+        rtMapping[rt.SobjectType]= rt.Id;
+    }
+
+
+
 
     if(!opts){
         opts = {
             archetypename : 'new_archetype',
-            recordtypeid : 'test',
+            recordtypes : {},
             stepname : 'action_step_1',
             agendagroup : 'agAlways',
             conditionname : 'condition_1',
@@ -190,7 +199,7 @@ module.exports.createArchetypeBoilerplate = (path = constants.CURRENT_WORK_DIR,o
         }
     }
     //adding the generated ids to the options
-    opts = {...opts,archExtId,columnCondExtId,columnActExtId,condExtId,actExtId,stepExtId};
+    opts = {...opts,archExtId,columnCondExtId,columnActExtId,condExtId,actExtId,stepExtId,recordtypes : rtMapping};
     const archetypeJson = archetypemanager.generateArchetypeJsonBoilerPlate(opts);
 
     //creating the files and folders

@@ -40,11 +40,11 @@ export default class CreateArchetype extends SfdxCommand{
             this.ux.startSpinner(`Creating archetype boilerplate...`);
             const debugLevel = this.flags.debug ? 'debug' : 'error';
             const connection = this.org.getConnection();
-            const recordtype = await getArchetypeB2wRecordTypeId(connection);
+            const recordtypes = await getArchetypeB2wRecordTypeId(connection);
             //querying salesforce data to grab recordtype references
             const opts = {
                 archetypename : this.flags.name,
-                recordtypeid : recordtype.Id,
+                recordtypes : recordtypes,
                 stepname : 'action_step_1',
                 agendagroup : 'agAlways',
                 conditionname : 'condition_1',

@@ -13,21 +13,21 @@
         },
         {
             "description" : "Archetype Conditions",
-            "query" : "Select Name, Bit2Archetypes__External_Id__c, Bit2Archetypes__Label__c, Bit2Archetypes__Name__c, Bit2Archetypes__Path__c, Bit2Archetypes__Type__c, Bit2Archetypes__Template__c, Bit2Archetypes__Variables__c, Bit2Archetypes__Relationship__c  from Bit2Archetypes__Archetype_Condition__c",
+            "query" : "Select Name,RecordTypeId,Bit2Archetypes__External_Id__c, Bit2Archetypes__Label__c, Bit2Archetypes__Name__c, Bit2Archetypes__Path__c, Bit2Archetypes__Type__c, Bit2Archetypes__Template__c, Bit2Archetypes__Variables__c, Bit2Archetypes__Relationship__c  from Bit2Archetypes__Archetype_Condition__c",
             "operation": "Readonly",
             "externalId": "Bit2Archetypes__External_Id__c"
             
         }, 
         {
             "description" : "Archetype Actions",
-            "query": "Select Bit2Archetypes__External_Id__c, Bit2Archetypes__Label__c, Bit2Archetypes__Name__c, Bit2Archetypes__Type__c from Bit2Archetypes__Archetype_Action__c",
+            "query": "Select Bit2Archetypes__External_Id__c,RecordTypeId, Bit2Archetypes__Label__c, Bit2Archetypes__Name__c, Bit2Archetypes__Type__c from Bit2Archetypes__Archetype_Action__c",
             "operation": "Readonly",
             "externalId": "Bit2Archetypes__External_Id__c"
             
         }, 
         {
             "description" : "Archetype Action Step",
-            "query": "Select Name, Bit2Archetypes__Archetype_Action__c, Bit2Archetypes__Execution_sequence__c, Bit2Archetypes__External_Id__c, Bit2Archetypes__Operation__c, Bit2Archetypes__Programs__c, Bit2Archetypes__Action_Objs__c, Bit2Archetypes__Template__c from Bit2Archetypes__Archetype_Action_Step__c",
+            "query": "Select Name,RecordTypeId, Bit2Archetypes__Archetype_Action__c, Bit2Archetypes__Execution_sequence__c, Bit2Archetypes__External_Id__c, Bit2Archetypes__Operation__c, Bit2Archetypes__Programs__c, Bit2Archetypes__Action_Objs__c, Bit2Archetypes__Template__c from Bit2Archetypes__Archetype_Action_Step__c",
             "operation": "Readonly",
             "externalId": "Bit2Archetypes__External_Id__c"
             
