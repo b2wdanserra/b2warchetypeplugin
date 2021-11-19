@@ -162,7 +162,9 @@ async function writeExportCSVToFile(jsonFileMap,generateArtifact,timestamp=false
         const rtFileNameSrc = join(constants.UTIL_DATA_BASE_FOLDER,'util_data','RecordType.csv');
         const rtFileNameTarget = join(IMPORT_PROJECT_PATH,'RecordType.csv');
         fs.copyFile(rtFileNameSrc,rtFileNameTarget,(err)=>{
-            console.log("Error Found:", err);
+            if(err){
+                logger.error(`Error in copying recordtype mapping file ${utility.printError(err)}`);
+            }
         });
     }else{
         generateArtifactCSVStructures(jsonFileMap,timestamp);
