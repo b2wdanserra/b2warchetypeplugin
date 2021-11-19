@@ -4,8 +4,7 @@ const fs = require('fs');
 const {join} = require('path');
 const _ = require('lodash');
 const logger = require('../logger');
-const { v4: uuidv4 } = require('uuid');
-const UuidEncoder = require('uuid-encoder');
+const utility = require('../utility');
 
 
 
@@ -59,34 +58,48 @@ module.exports.updateArchetypeFile = (archetypeName,b2wprojectpath = constants.P
     
         const archetypeJsonFileName = join(archetypeFolderName,`${archetypeName}.json`);
         const archetypeJsonFile = JSON.parse(fs.readFileSync(archetypeJsonFileName));
+
+        const archetypeSource = archetypeJsonFile.Bit2Archetypes__Archetype__c.Bit2Archetypes__External_Id__c.startsWith('b2wvsc_') ?
+        'tool' : 'sfdc';
+
     
         //read the conditions and steps file, then modify the original json
         const steps = readFilesAsObject(archetypeStepsFolderName);
         const conditions = readFilesAsObject(archetypeConditionsFolderName);
         const oldSteps = _.groupBy(archetypeJsonFile[constants.ACTION_STEP_OBJECT_KEY],'Bit2Archetypes__External_Id__c');
         const oldConditions = _.groupBy(archetypeJsonFile[constants.CONDITION_OBJECT_KEY],'Bit2Archetypes__External_Id__c');
-        const oldColumnConditions = _.groupBy(archetypeJsonFile[constants.COLUMN_COND_OBJECT_KEY],'Bit2Archetypes__Archetype_Condition__c');
-        const oldColumnActions = _.groupBy(archetypeJsonFile[constants.COLUMN_ACT_OBJECT_KEY],'Bit2Archetypes__Archetype_Action__c');
+        const oldColumnConditions = _.groupBy(archetypeJsonFile[constants.COLUMN_COND_OBJECT_KEY],'Bit2Archetypes__Archetype_Condition__r.Bit2Archetypes__External_Id__c');
+        const oldColumnActions = _.groupBy(archetypeJsonFile[constants.COLUMN_ACT_OBJECT_KEY],'Bit2Archetypes__Archetype_Action__r.Bit2Archetypes__External_Id__c');
 
+        logger.debug(`Found archetype conditions : ${JSON.stringify(conditions)}`);
+        logger.debug(`Found archetype conditions with keys : ${JSON.stringify(Object.keys(conditions))}`);
     
         //getting variables by condition notation
         let fullConditionVariablesPath = "";
         let fullConditionVariables = "";
         for(const cKey of Object.keys(conditions)){
+            logger.debug(`Getting variables mapping on condition with file key : ${cKey}`);
+            logger.debug(`Getting variables mapping on condition ${conditions[cKey]}`);
             fullConditionVariablesPath += archetypemanager.extractVariablesFromConditionsMapping(conditions[cKey]);
         }
         for(const cKey of Object.keys(conditions)){
+            logger.debug(`Getting variables on condition with file key : ${cKey}`);
+            logger.debug(`Getting variables on condition ${conditions[cKey]}`);
             fullConditionVariables += archetypemanager.extractVariablesFromConditions(conditions[cKey]);
         }
-    
+
+
         //updating conditions
         for(const cKey of Object.keys(conditions)){
             const currentCondId = cKey.substring(cKey.lastIndexOf('_')+1,cKey.lastIndexOf('.txt'));
+
+            logger.debug(`Updating condition on json with id : ${currentCondId}`);
+
             const currentCondVariablesPath = archetypemanager.extractVariablesFromConditionsMapping(conditions[cKey]);
             const currentConditionVariables = archetypemanager.extractVariablesFromConditions(conditions[cKey]);
             oldConditions[currentCondId][0].Bit2Archetypes__Template__c = conditions[cKey];
             oldConditions[currentCondId][0].Bit2Archetypes__Variables__c = currentConditionVariables;
-            oldColumnConditions[currentCondId][0].Bit2Archetypes__Object_Mapping__c = currentCondVariablesPath;
+            //oldColumnConditions[currentCondId][0].Bit2Archetypes__Object_Mapping__c = currentCondVariablesPath;
             
         }
         
@@ -95,12 +108,11 @@ module.exports.updateArchetypeFile = (archetypeName,b2wprojectpath = constants.P
         for(const sKey of Object.keys(steps)){
             const currentStepId = sKey.substring(sKey.lastIndexOf('_')+1,sKey.lastIndexOf('.js'));
             oldSteps[currentStepId][0].Bit2Archetypes__Template__c = steps[sKey]; 
-            oldSteps[currentStepId][0].Bit2Archetypes__Action_Objs__c = fullConditionVariables;
-            oldColumnActions[oldSteps[currentStepId][0].Bit2Archetypes__Archetype_Action__c][0].Bit2Archetypes__Object_Mapping__c = fullConditionVariablesPath;
+            //oldSteps[currentStepId][0].Bit2Archetypes__Action_Objs__c = fullConditionVariables;
+            //oldColumnActions[oldSteps[currentStepId][0].Bit2Archetypes__Archetype_Action__r.Bit2Archetypes__External_Id__c][0].Bit2Archetypes__Object_Mapping__c = fullConditionVariablesPath;
         }
         
     
-        //TODO: fix this
         const newSteps = [].concat.apply([], Object.values(oldSteps));
         const newConds = [].concat.apply([], Object.values(oldConditions));
         const newColConds = [].concat.apply([], Object.values(oldColumnConditions));
@@ -116,7 +128,8 @@ module.exports.updateArchetypeFile = (archetypeName,b2wprojectpath = constants.P
     
         fs.writeFileSync(archetypeJsonFileName,JSON.stringify(newJsonArchetype,null,"\t"));
     }catch(ex){
-        throw new Error(ex.message);
+        logger.error(utility.printError(ex));
+        // throw new Error(ex.message);
     }
 }
 
@@ -167,16 +180,29 @@ module.exports.createArtifactDirectoryStructure = (path = constants.CURRENT_WORK
     }
 }
 
+module.exports.checkBundleExistence = (archetypename,b2wprojectpath = constants.CURRENT_WORK_DIR)=>{
+    const archetypeFolderName = join(b2wprojectpath,constants.ARCHTYPE_FOLDER_NAME,archetypename);
+    return fs.existsSync(archetypeFolderName)
+}
+
+
+module.exports.readBundleJsonFile = (archetypename,b2wprojectpath = constants.CURRENT_WORK_DIR)=>{
+    const requestedArchetypeBundlePath = join(b2wprojectpath,constants.ARCHTYPE_FOLDER_NAME,archetypename,`${archetypename}.json`);
+    return fs.readFileSync(requestedArchetypeBundlePath,'utf-8');
+}
+
+
 
 module.exports.createArchetypeBoilerplate = (path = constants.CURRENT_WORK_DIR,opts) => {
     
     //generating ids for the new boilerplate
-    const archExtId = generatebase16UUID();
-    const columnCondExtId = generatebase16UUID();
-    const columnActExtId = generatebase16UUID();
-    const condExtId = generatebase16UUID();
-    const actExtId = generatebase16UUID();
-    const stepExtId = generatebase16UUID();
+    const archExtId = utility.generatebase16UUID();
+    const columnCondExtId = utility.generatebase16UUID();
+    const columnActExtId = utility.generatebase16UUID();
+    const condExtId = utility.generatebase16UUID();
+    const actExtId = utility.generatebase16UUID();
+    const stepExtId = utility.generatebase16UUID();
+
 
     //managing rts
     const {recordtypes} = opts;
@@ -185,21 +211,29 @@ module.exports.createArchetypeBoilerplate = (path = constants.CURRENT_WORK_DIR,o
         rtMapping[rt.SobjectType]= rt.Id;
     }
 
-
-
-
     if(!opts){
         opts = {
             archetypename : 'new_archetype',
             recordtypes : {},
             stepname : 'action_step_1',
             agendagroup : 'agAlways',
-            conditionname : 'condition_1',
-            actionname : 'action_1', 
+            conditionname : 'condition',
+            actionname  : 'action'
         }
     }
     //adding the generated ids to the options
-    opts = {...opts,archExtId,columnCondExtId,columnActExtId,condExtId,actExtId,stepExtId,recordtypes : rtMapping};
+    opts = {
+        ...opts,
+        archExtId,
+        columnCondExtId,
+        columnActExtId,
+        condExtId,
+        actExtId,
+        stepExtId,
+        recordtypes : rtMapping,
+        stepname : 'action_step_1',
+
+    };
     const archetypeJson = archetypemanager.generateArchetypeJsonBoilerPlate(opts);
 
     //creating the files and folders
@@ -208,6 +242,78 @@ module.exports.createArchetypeBoilerplate = (path = constants.CURRENT_WORK_DIR,o
     createDirectoryIfNotExists(archetypeFolder);
     this.populateArchetypeBundleFolder(archetypeBaseFolder,[archetypeJson]);
 }
+
+
+module.exports.addConditionToBundle = (opts,path = constants.CURRENT_WORK_DIR) => {
+    const {archetypename,conditionname,recordtypes} = opts;
+
+    const rtMapping = {};
+    for(const rt of recordtypes){
+        rtMapping[rt.SobjectType]= rt.Id;
+    }
+
+    const condExtId = utility.generatebase16UUID();
+    const condopts = {
+        condExtId,
+        conditionname,
+        rtMapping,
+        bundlejsonstr : this.readBundleJsonFile(archetypename)
+    };
+    const updatedBundleJson = archetypemanager.addarchetypeconditiontobundle(condopts);
+
+    //creating the condition file and updating the json
+    const bundleLocation = join(path,constants.ARCHTYPE_FOLDER_NAME,archetypename);
+    const conditionFolder = join(bundleLocation,'conditions');
+    const conditionFileName = join(conditionFolder,`${conditionname}_${condExtId}.txt`);
+    const conditionContent = archetypemanager.generatePlaceHolderCondition();
+    fs.writeFileSync(conditionFileName,conditionContent);
+    fs.writeFileSync(join(bundleLocation,`${archetypename}.json`),JSON.stringify(updatedBundleJson,null,"\t"));
+    
+}
+
+module.exports.addActionToBundle = (opts,path = constants.CURRENT_WORK_DIR) => {
+    const {archetypename,actionname,recordtypes} = opts;
+
+    const rtMapping = {};
+    for(const rt of recordtypes){
+        rtMapping[rt.SobjectType]= rt.Id;
+    }
+    const actExtId = utility.generatebase16UUID();
+    const actopts = {
+        actExtId,
+        actionname,
+        rtMapping,
+        bundlejsonstr : this.readBundleJsonFile(archetypename)
+    };
+    const updatedBundleJson = archetypemanager.addarchetypeactiontobundle(actopts);
+    const bundleLocation = join(path,constants.ARCHTYPE_FOLDER_NAME,archetypename);
+    fs.writeFileSync(join(bundleLocation,`${archetypename}.json`),JSON.stringify(updatedBundleJson,null,"\t"));
+}
+
+module.exports.addActionStepToBundle = (opts,path = constants.CURRENT_WORK_DIR) => {
+    const {archetypename,actionname,recordtypes,stepname,sequence} = opts;
+    const rtMapping = {};
+    for(const rt of recordtypes){
+        rtMapping[rt.SobjectType]= rt.Id;
+    }
+    const stepExtId = utility.generatebase16UUID();
+    const stepopts = {
+        stepname,
+        stepExtId,
+        actionname,
+        rtMapping,
+        sequence,
+        bundlejsonstr : this.readBundleJsonFile(archetypename)
+    };
+    const updatedBundleJson = archetypemanager.addarchetypeactionsteptobundle(stepopts);
+    const bundleLocation = join(path,constants.ARCHTYPE_FOLDER_NAME,archetypename);
+    const stepContent = archetypemanager.generatePlaceHolderActionStep();
+    const stepFolder = join(bundleLocation,'steps');
+    const stepFileName = join(stepFolder,`${stepname}_${stepExtId}.js`);
+    fs.writeFileSync(stepFileName,stepContent);
+    fs.writeFileSync(join(bundleLocation,`${archetypename}.json`),JSON.stringify(updatedBundleJson,null,"\t"));
+}
+
 
 
 function createDirectoryIfNotExists (dirpath){
@@ -225,11 +331,4 @@ function readFilesAsObject(dirname){
     });
     return rawFileData;
 }
-
-
-function generatebase16UUID(){
-    const encoder = new UuidEncoder('base16');
-    return encoder.encode(uuidv4());
-}
-
 

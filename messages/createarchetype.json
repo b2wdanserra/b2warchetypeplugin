@@ -3,5 +3,7 @@
     "orgAliasFlagDescription": "Alias of the source organization",
     "nameFlagDescription": "The name of the newly created archetype",
     "agendaGroupFlagDescription" : "The name of the agenda group for this archetype",
-    "debugFlagDescription": "enables debug logging"
+    "debugFlagDescription": "enables debug logging",
+    "actionNameFlagDescription" : "Name of the archetype action associated to this archetype",
+    "conditionNameFlagDescription": "Name of the archetype condition associated to this archetype"
   }

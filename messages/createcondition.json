@@ -1,0 +1,7 @@
+{
+    "commandDescription": "Create a boilerplate condition on an existing archetype",
+    "orgAliasFlagDescription": "Alias of the source organization",
+    "nameFlagDescription": "The name of the newly created archetype condition",
+    "debugFlagDescription": "enables debug logging",
+    "archetypeNameFlagDescription" : "Name of the archetype to which associate the condition"
+  }
