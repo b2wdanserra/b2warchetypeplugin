@@ -158,12 +158,12 @@ async function writeExportCSVToFile(jsonFileMap,generateArtifact,timestamp=false
 
     if(!generateArtifact){
         const csvWriteResult = await writeCSV(jsonFileMap,IMPORT_PROJECT_PATH);
-        // //moving the recordtype file which is needed for import
-        // const rtFileNameSrc = join(constants.UTIL_DATA_BASE_FOLDER,'util_data','RecordType.csv');
-        // const rtFileNameTarget = join(IMPORT_PROJECT_PATH,'RecordType.csv');
-        // fs.copyFile(rtFileNameSrc,rtFileNameTarget,(err)=>{
-        //     console.log("Error Found:", err);
-        // });
+        //moving the recordtype file which is needed for import
+        const rtFileNameSrc = join(constants.UTIL_DATA_BASE_FOLDER,'util_data','RecordType.csv');
+        const rtFileNameTarget = join(IMPORT_PROJECT_PATH,'RecordType.csv');
+        fs.copyFile(rtFileNameSrc,rtFileNameTarget,(err)=>{
+            console.log("Error Found:", err);
+        });
     }else{
         generateArtifactCSVStructures(jsonFileMap,timestamp);
     }

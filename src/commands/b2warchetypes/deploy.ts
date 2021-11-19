@@ -1,6 +1,7 @@
 import { flags, SfdxCommand } from "@salesforce/command";
 import {Messages,SfdxError} from "@salesforce/core"
 import * as deploy from "../../b2wlib/utils/scripts/deploy";
+import * as extract from '../../b2wlib/utils/scripts/extract';
 import {createRecordtypeMappingFile} from '../../helpers/recordtypefilehelper';
 
 Messages.importMessagesDirectory(__dirname);
@@ -27,8 +28,9 @@ export default class Deploy extends SfdxCommand{
             const orgAlias = this.flags.targetusername;
             const debugLevel = this.flags.debug ? 'debug' : 'error';
             this.ux.startSpinner(`Deploying Bit2Win Archetypes to ${orgAlias}`);
-            const connection = this.org.getConnection();
-            await createRecordtypeMappingFile(connection);
+            //const connection = this.org.getConnection();
+            //await createRecordtypeMappingFile(connection);
+            await extract(orgAlias,debugLevel);
             await deploy(orgAlias,debugLevel);
             this.ux.stopSpinner();
         }catch(ex){

@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 const createRecordtypeMappingFile = async (connection : Connection) => {
-    const recordtypes = await getArchetypeB2wRecordTypeId(connection);
+    /*const recordtypes = await getArchetypeB2wRecordTypeId(connection);
     const filePath = path.join(constants.UTIL_DATA_BASE_FOLDER,'util_data','import','Recordtype.csv');
     const headerLine = 'Id,$$DeveloperName$NamespacePrefix$SobjectType'
     const lines = [headerLine];
@@ -18,7 +18,7 @@ const createRecordtypeMappingFile = async (connection : Connection) => {
     lines.forEach((line)=>{
         ws.write(`${line}\n`);
     })
-    ws.end();
+    ws.end();*/
 }
 
 export {createRecordtypeMappingFile}
