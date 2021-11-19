@@ -9,6 +9,7 @@ const {readFilesAsObject,readArchetypeFileOnSubDirs,createArtifactDirectoryStruc
 const EXTRACTED_FILE_PATH = join(constants.UTIL_DATA_BASE_FOLDER,'util_data','target');
 const IMPORT_PROJECT_PATH = join(constants.UTIL_DATA_BASE_FOLDER,'util_data','import');
 const BASE_PROJECT_PATH = constants.UTIL_DATA_BASE_FOLDER;
+const utility = require('../utility');
 
 
 module.exports.getArchetypeStructure = async (b2wprojectpath = BASE_PROJECT_PATH)=>{
@@ -22,7 +23,7 @@ module.exports.recreateCSVForImport = async (b2wprojectpath = BASE_PROJECT_PATH,
         const filesMap = recreateCSVFromJSON(b2wprojectpath);
         const outcsv = await writeExportCSVToFile(filesMap,generateArtifact,timestamp);
     }catch(ex){
-        logger.error(JSON.stringify(ex));
+        logger.error(utility.printError(ex));
     }
 }
 
@@ -91,7 +92,7 @@ function reparentRecords(csvJsonContents){
 
             result.push(singleArchetypeJson);
         }catch(ex){
-            logger.error(JSON.stringify(ex));
+            logger.error(utility.printError(ex));
         }
     }
 
@@ -134,7 +135,7 @@ function recreateCSVFromJSON(b2wprojectpath = BASE_PROJECT_PATH){
         }
         return individualFilesMap;
     }catch(ex){
-        logger.error(JSON.stringify(ex));
+        logger.error(utility.printError(ex));
     }
 }
 
@@ -157,10 +158,12 @@ async function writeExportCSVToFile(jsonFileMap,generateArtifact,timestamp=false
 
     if(!generateArtifact){
         const csvWriteResult = await writeCSV(jsonFileMap,IMPORT_PROJECT_PATH);
-        //moving the recordtype file which is needed for import
-        const rtFileNameSrc = join(EXTRACTED_FILE_PATH,'RecordType.csv');
-        const rtFileNameTarget = join(IMPORT_PROJECT_PATH,'RecordType.csv');
-        fs.copyFileSync(rtFileNameSrc,rtFileNameTarget);
+        // //moving the recordtype file which is needed for import
+        // const rtFileNameSrc = join(constants.UTIL_DATA_BASE_FOLDER,'util_data','RecordType.csv');
+        // const rtFileNameTarget = join(IMPORT_PROJECT_PATH,'RecordType.csv');
+        // fs.copyFile(rtFileNameSrc,rtFileNameTarget,(err)=>{
+        //     console.log("Error Found:", err);
+        // });
     }else{
         generateArtifactCSVStructures(jsonFileMap,timestamp);
     }
@@ -183,7 +186,7 @@ async function generateArtifactCSVStructures(jsonfileMap,timestamp){
 
         const csvWriteResult = await writeCSV(jsonfileMap,artifactPath);
     }catch(ex){
-        logger.error(JSON.stringify(ex));
+        logger.error(utility.printError(ex));
     }
 
 }
@@ -196,7 +199,7 @@ async function writeCSV(jsonFileMap,path){
         const csv = await parseAsync(jsonFileMap[jsonMapKey]);
         const out = fs.writeFile(join(path,jsonMapKey),csv,(err)=>{
             if(err){
-                logger.error(err);
+                logger.error(utility.printError(err));
             }
         });
     }

@@ -1,0 +1,10 @@
+{
+    "commandDescription": "Create a boilerplate action step on an existing archetype and existing archetype action",
+    "orgAliasFlagDescription": "Alias of the source organization",
+    "nameFlagDescription": "The name of the newly created archetype action step",
+    "actionNameFlagDescription" : "The name of the existing archetype action to associate the newly created action step",
+    "debugFlagDescription": "enables debug logging",
+    "archetypeNameFlagDescription" : "Name of the archetype to which associate the action step",
+    "sequenceFlagDescription" : "The Execution sequence of the archetype action step"
+
+  }

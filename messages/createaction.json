@@ -1,0 +1,7 @@
+{
+    "commandDescription": "Create a boilerplate action on an existing archetype",
+    "orgAliasFlagDescription": "Alias of the source organization",
+    "nameFlagDescription": "The name of the newly created archetype action",
+    "debugFlagDescription": "enables debug logging",
+    "archetypeNameFlagDescription" : "Name of the archetype to which associate the action"
+  }
