@@ -56,18 +56,29 @@ function reparentRecords(csvJsonContents){
 
         //archetype and column actions/conditions
         singleArchetypeJson['name'] = arch.Bit2Archetypes__Name__c;
+
+        logger.debug(`Processing reparenting for archetype: ${arch.Bit2Archetypes__Name__c}`);
+
         singleArchetypeJson[constants.ARCHTYPE_OBJECT_KEY] = arch;
         singleArchetypeJson[constants.COLUMN_COND_OBJECT_KEY] = gColumnConditions[arch.Id];
         singleArchetypeJson[constants.COLUMN_ACT_OBJECT_KEY] = gColumnActions[arch.Id];
 
         try{
             //associationg action conditions(trickier)
-            const actionsIds = gColumnActions[arch.Id].map((colact)=>{
-                return colact.Bit2Archetypes__Archetype_Action__c;
-            });
-            const conditionsIds = gColumnConditions[arch.Id].map((colcond)=>{
-                return colcond.Bit2Archetypes__Archetype_Condition__c;
-            })
+            let actionIds = [];
+            let conditionsIds = [];
+
+            if(gColumnActions[arch.Id]){
+                actionsIds = gColumnActions[arch.Id].map((colact)=>{
+                    return colact.Bit2Archetypes__Archetype_Action__c;
+                });
+            }
+
+            if(gColumnConditions[arch.Id]){
+                conditionsIds = gColumnConditions[arch.Id].map((colcond)=>{
+                    return colcond.Bit2Archetypes__Archetype_Condition__c;
+                })
+            }
 
             singleArchetypeJson[constants.ACTION_OBJECT_KEY] = actions.filter((act)=>{
                 return actionsIds.includes(act.Id);
