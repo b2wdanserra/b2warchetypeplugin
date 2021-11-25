@@ -65,7 +65,7 @@ function reparentRecords(csvJsonContents){
 
         try{
             //associationg action conditions(trickier)
-            let actionIds = [];
+            let actionsIds = [];
             let conditionsIds = [];
 
             if(gColumnActions[arch.Id]){
