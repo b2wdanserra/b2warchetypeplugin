@@ -1,7 +1,6 @@
 import { flags, SfdxCommand } from "@salesforce/command";
 import {Messages,SfdxError} from "@salesforce/core"
 import * as deploy from "../../b2wlib/utils/scripts/deploy";
-import * as extract from '../../b2wlib/utils/scripts/extract';
 // import {createRecordtypeMappingFile} from '../../helpers/recordtypefilehelper';
 
 Messages.importMessagesDirectory(__dirname);
