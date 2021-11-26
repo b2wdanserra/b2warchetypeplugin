@@ -30,7 +30,7 @@ export default class Deploy extends SfdxCommand{
             this.ux.startSpinner(`Deploying Bit2Win Archetypes to ${orgAlias}`);
             //const connection = this.org.getConnection();
             //await createRecordtypeMappingFile(connection);
-            await extract(orgAlias,debugLevel);
+            //await extract(orgAlias,debugLevel);
             await deploy(orgAlias,debugLevel);
             this.ux.stopSpinner();
         }catch(ex){
