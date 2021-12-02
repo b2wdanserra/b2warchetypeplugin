@@ -222,6 +222,25 @@ module.exports.addarchetypeactionsteptobundle = (opts) => {
 }
 
 
+module.exports.associateactiontobundle = (opts) => {
+
+    const {bundlejsonstr,actExtId,columnActExtId,rtMapping,sequence} = opts;
+    const parsedJson = JSON.parse(bundlejsonstr);
+    
+    const archExtId = parsedJson['Bit2Archetypes__Archetype__c'].Bit2Archetypes__External_Id__c;
+
+    const newColumnAction = this.generateColActionJsonPlaceHolder({
+        columnActExtId,
+        archExtId,
+        actExtId,
+        sequence
+    });
+
+    parsedJson['Bit2Archetypes__Archetype_Column_Action__c'].push(newColumnAction);
+    return parsedJson;
+}
+
+
 module.exports.generateConditionJsonPlaceHolder = (opts) => {
 
     const {condExtId,conditionname,rtId} = opts;
@@ -261,8 +280,8 @@ module.exports.generateColActionJsonPlaceHolder = (opts) => {
         "Bit2Archetypes__Archetype__c": archExtId,
         "Bit2Archetypes__Archetype_Action__c": actExtId,
         "Bit2Archetypes__External_Id__c": columnActExtId,
-        "Bit2Archetypes__Synchronization_Sequence__c": "0",
-        "Bit2Archetypes__Visualization_Sequence__c": "0",
+        "Bit2Archetypes__Synchronization_Sequence__c": sequence || "0",
+        "Bit2Archetypes__Visualization_Sequence__c": sequence || "0",
         "Bit2Archetypes__Object_Mapping__c": "",
         "Bit2Archetypes__Archetype__r": {
             "Bit2Archetypes__External_Id__c": archExtId
