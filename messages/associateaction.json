@@ -1,0 +1,7 @@
+{
+    "commandDescription": "Associate existing action in the project to an existing archetype",
+    "orgAliasFlagDescription": "Alias of the source organization",
+    "actExtIfFlagDescription": "ExternalId of the action to associate",
+    "debugFlagDescription": "enables debug logging",
+    "archetypeNameFlagDescription" : "Name of the archetype to which associate the action"
+  }
