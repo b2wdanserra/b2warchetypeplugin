@@ -7,7 +7,7 @@ import {getArchetypeB2wRecordTypeId} from '../../../helpers/queryhelper';
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('b2warchetype', 'associateaction');
 
-export default class CreateArchetypeAction extends SfdxCommand{
+export default class AssociateArchetypeAction extends SfdxCommand{
 
 
     protected static requiresUsername = true;
