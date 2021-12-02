@@ -315,6 +315,28 @@ module.exports.addActionStepToBundle = (opts,path = constants.CURRENT_WORK_DIR) 
 }
 
 
+module.exports.associateExistingActionToArchetype = (opts,path = constants.CURRENT_WORK_DIR) => {
+    const {archetypename,actionExtId,recordtypes,sequence} = opts;
+    const rtMapping = {};
+    for(const rt of recordtypes){
+        rtMapping[rt.SobjectType]= rt.Id;
+    }
+    const columnActExtId = utility.generatebase16UUID();
+
+    const colActOpts = {
+        actionExtId,
+        columnActExtId,
+        rtMapping,
+        sequence,
+        bundlejsonstr : this.readBundleJsonFile(archetypename)
+    };
+
+    const updatedBundleJson = archetypemanager.associateactiontobundle(opts);
+    const bundleLocation = join(path,constants.ARCHTYPE_FOLDER_NAME,archetypename);
+    fs.writeFileSync(join(bundleLocation,`${archetypename}.json`),JSON.stringify(updatedBundleJson,null,"\t"));
+}
+
+
 
 function createDirectoryIfNotExists (dirpath){
     if(!fs.existsSync(dirpath)){
