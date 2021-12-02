@@ -19,7 +19,7 @@ export default class AssociateArchetypeAction extends SfdxCommand{
             description : messages.getMessage('debugFlagDescription'),
             required : false
         }),
-        actExtId : flags.string(
+        id : flags.string(
             { 
                 char : 'n' , 
                 description : messages.getMessage('actExtIfFlagDescription'),
@@ -37,15 +37,16 @@ export default class AssociateArchetypeAction extends SfdxCommand{
 
     public async run(): Promise<any> {
         try{
-            this.ux.startSpinner(`associating archetype action with extId ${this.flags.actExtId}  on ${this.flags.archetypename}...`);
+            this.ux.startSpinner(`associating archetype action with extId ${this.flags.id}  on ${this.flags.archetypename}...`);
             const debugLevel = this.flags.debug ? 'debug' : 'error';
             const connection = this.org.getConnection();
             const recordtypes = await getArchetypeB2wRecordTypeId(connection);
             //querying salesforce data to grab recordtype references
+
             const opts = {
                 archetypename : this.flags.archetypename,
                 recordtypes : recordtypes,
-                actExtId : this.flags.actExtId
+                actExtId : this.flags.id
             }
             await associate.associateAction(debugLevel,opts);
             this.ux.stopSpinner();

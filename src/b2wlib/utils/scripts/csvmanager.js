@@ -144,6 +144,9 @@ function recreateCSVFromJSON(b2wprojectpath = BASE_PROJECT_PATH){
                 }
             }
         }
+
+        //TODO: add unmapped rows inside export csv
+
         return individualFilesMap;
     }catch(ex){
         logger.error(utility.printError(ex));
