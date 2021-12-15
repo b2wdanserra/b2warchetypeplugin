@@ -61,7 +61,8 @@ export default class CreateArchetypeActionStep extends SfdxCommand{
                 recordtypes : recordtypes,
                 actionname : this.flags.actionname,
                 stepname : this.flags.stepname,
-                sequence : this.flags.sequence
+                sequence : this.flags.sequence,
+                orgalias : this.flags.targetusername
             }
             await create.createarchetypeactionstep(debugLevel,opts);
             this.ux.stopSpinner();

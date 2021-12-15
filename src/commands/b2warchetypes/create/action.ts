@@ -45,7 +45,9 @@ export default class CreateArchetypeAction extends SfdxCommand{
             const opts = {
                 archetypename : this.flags.archetypename,
                 recordtypes : recordtypes,
-                actionname : this.flags.actionname
+                actionname : this.flags.actionname,
+                orgalias : this.flags.targetusername
+
             }
             await create.createarchetypeaction(debugLevel,opts);
             this.ux.stopSpinner();

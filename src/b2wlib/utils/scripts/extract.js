@@ -7,7 +7,7 @@ const logger = require('../logger');
 const {printError} = require('../utility');
 
 
-module.exports = async function(orgAlias = constants.ORG_ALIAS,logLevel,projectPath = constants.CURRENT_WORK_DIR){
+module.exports.extractAll = async function(orgAlias = constants.ORG_ALIAS,logLevel,projectPath = constants.CURRENT_WORK_DIR){
     try{
         logger.setLevel(logLevel);
         await sfdxutils.checkAlias(orgAlias);

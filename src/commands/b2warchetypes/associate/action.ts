@@ -46,7 +46,8 @@ export default class AssociateArchetypeAction extends SfdxCommand{
             const opts = {
                 archetypename : this.flags.archetypename,
                 recordtypes : recordtypes,
-                actExtId : this.flags.id
+                actExtId : this.flags.id,
+                orgalias : this.flags.targetusername
             }
             await associate.associateAction(debugLevel,opts);
             this.ux.stopSpinner();

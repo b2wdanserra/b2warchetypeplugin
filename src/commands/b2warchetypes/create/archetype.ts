@@ -55,6 +55,7 @@ export default class CreateArchetype extends SfdxCommand{
                 agendagroup : 'agAlways',
                 conditionname : this.flags.conditionname || 'condition',
                 actionname : this.flags.actionname || 'action',
+                orgalias : this.flags.targetusername
             }
             await create.createarchetype(debugLevel,opts);
             this.ux.stopSpinner();

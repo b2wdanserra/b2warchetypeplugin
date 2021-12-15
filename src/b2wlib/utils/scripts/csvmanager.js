@@ -10,6 +10,7 @@ const EXTRACTED_FILE_PATH = join(constants.UTIL_DATA_BASE_FOLDER,'util_data','ta
 const IMPORT_PROJECT_PATH = join(constants.UTIL_DATA_BASE_FOLDER,'util_data','import');
 const BASE_PROJECT_PATH = constants.UTIL_DATA_BASE_FOLDER;
 const utility = require('../utility');
+const shell_utils = require('../shell/shell_utils');
 
 
 module.exports.getArchetypeStructure = async (b2wprojectpath = BASE_PROJECT_PATH)=>{
@@ -25,6 +26,19 @@ module.exports.recreateCSVForImport = async (b2wprojectpath = BASE_PROJECT_PATH,
     }catch(ex){
         logger.error(utility.printError(ex));
     }
+}
+
+
+module.exports.reAlignArchetypeMetadataJSONWithOrg = async (archetypeName,orgAlias) => {
+    const extractionResult = await shell_utils.extractArchetypeFiles(orgAlias);
+    const jsonArchetypes = await this.getArchetypeStructure();
+    const mappedArchetypeString = _.groupBy(jsonArchetypes,'name');
+
+    if(mappedArchetypeString.hasOwnProperty(archetypeName)){
+        return mappedArchetypeString[archetypeName][0];
+    }
+
+    return null;
 }
 
 
@@ -171,15 +185,11 @@ function manipulateJsonForCSVReExport(recordJson){
 async function writeExportCSVToFile(jsonFileMap,generateArtifact,timestamp=false){
 
     if(!generateArtifact){
-        const csvWriteResult = await writeCSV(jsonFileMap,IMPORT_PROJECT_PATH);
         //moving the recordtype file which is needed for import
         const rtFileNameSrc = join(constants.UTIL_DATA_BASE_FOLDER,'util_data','RecordType.csv');
         const rtFileNameTarget = join(IMPORT_PROJECT_PATH,'RecordType.csv');
-        fs.copyFile(rtFileNameSrc,rtFileNameTarget,(err)=>{
-            if(err){
-                logger.error(`Error in copying recordtype mapping file ${utility.printError(err)}`);
-            }
-        });
+        fs.copyFileSync(rtFileNameSrc,rtFileNameTarget);
+        const csvWriteResult = await writeCSV(jsonFileMap,IMPORT_PROJECT_PATH);
     }else{
         generateArtifactCSVStructures(jsonFileMap,timestamp);
     }
@@ -211,6 +221,31 @@ async function generateArtifactCSVStructures(jsonfileMap,timestamp){
 async function writeCSV(jsonFileMap,path){
     logger.debug('Starting csv writing...');
     logger.debug(`currentJSON fileMap ${JSON.stringify(jsonFileMap)}`);
+
+    //reconstruction of output csv also with not "connected records"
+    const exportJsonContents = await readMultipleCSV(EXTRACTED_FILE_PATH);
+
+    logger.debug(`Exported Json Contents ${JSON.stringify(exportJsonContents)}`);
+
+    //adding eventually excluded records in jsonfilemap to recreate csv correctly
+    for(const jsonMapKey of Object.keys(jsonFileMap)){
+
+        const exportJsonKey = `${jsonMapKey.substring(0,jsonMapKey.lastIndexOf('.'))}${constants.TARGET_FILE_EXTENSION_FINAL}`;
+        const exportJsonObjList = exportJsonContents[exportJsonKey];
+        const jsonMapObjList = jsonFileMap[jsonMapKey];
+
+        //mapping lists by extids
+        const exportMapping = _.groupBy(exportJsonObjList,'Bit2Archetypes__External_Id__c');
+        const deployFileMapping = _.groupBy(jsonMapObjList,'Bit2Archetypes__External_Id__c');
+
+        for(const exportMappingExtId of Object.keys(exportMapping)){
+            const currentRecord = exportMapping[exportMappingExtId][0];
+            if(!Object.keys(deployFileMapping).includes(exportMappingExtId)){
+                jsonMapObjList.push(currentRecord);
+            }
+        }
+    }
+
     for(const jsonMapKey of Object.keys(jsonFileMap)){
         const csv = await parseAsync(jsonFileMap[jsonMapKey]);
         const out = fs.writeFile(join(path,jsonMapKey),csv,(err)=>{

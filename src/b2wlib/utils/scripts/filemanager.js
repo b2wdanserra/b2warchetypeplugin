@@ -5,6 +5,7 @@ const {join} = require('path');
 const _ = require('lodash');
 const logger = require('../logger');
 const utility = require('../utility');
+const csvmanager = require('./csvmanager');
 
 
 
@@ -49,15 +50,26 @@ module.exports.populateArchetypeBundleFolder = (archetypeBaseFolderPath,bundleDa
 }
 
 
-module.exports.updateArchetypeFile = (archetypeName,b2wprojectpath = constants.PROJECT_ROOT) => {
+module.exports.updateArchetypeFile = async(archetypeName,orgAlias,b2wprojectpath = constants.PROJECT_ROOT) => {
 
     try{
+
         const archetypeFolderName = join(b2wprojectpath,constants.ARCHTYPE_FOLDER_NAME,archetypeName); //`${b2wprojectpath}\\${constants.ARCHTYPE_FOLDER_NAME}\\${archetypeName}`;
         const archetypeConditionsFolderName = join(b2wprojectpath,constants.ARCHTYPE_FOLDER_NAME,archetypeName,'conditions');
         const archetypeStepsFolderName = join(b2wprojectpath,constants.ARCHTYPE_FOLDER_NAME,archetypeName,'steps');
     
         const archetypeJsonFileName = join(archetypeFolderName,`${archetypeName}.json`);
-        const archetypeJsonFile = JSON.parse(fs.readFileSync(archetypeJsonFileName));
+
+
+        //first we re-extract the file from org to update the reference ids
+        let archetypeJsonFile;
+        const getArchetypeStructureFromOrgResult = await csvmanager.reAlignArchetypeMetadataJSONWithOrg(archetypeName,orgAlias);
+        
+        if(getArchetypeStructureFromOrgResult){
+            archetypeJsonFile = getArchetypeStructureFromOrgResult;
+        }else{
+            archetypeJsonFile = JSON.parse(fs.readFileSync(archetypeJsonFileName));
+        }
 
         const archetypeSource = archetypeJsonFile.Bit2Archetypes__Archetype__c.Bit2Archetypes__External_Id__c.startsWith('b2wvsc_') ?
         'tool' : 'sfdc';
@@ -106,7 +118,15 @@ module.exports.updateArchetypeFile = (archetypeName,b2wprojectpath = constants.P
 
         //updating actions
         for(const sKey of Object.keys(steps)){
-            const currentStepId = sKey.substring(sKey.lastIndexOf('_')+1,sKey.lastIndexOf('.js'));
+            let currentStepId;
+            if(sKey.includes('b2wvsc')){
+                currentStepId = sKey.substring(sKey.lastIndexOf('b2wvsc_'),sKey.lastIndexOf('.js'));
+            }else{
+                currentStepId = sKey.substring(sKey.lastIndexOf('_')+1,sKey.lastIndexOf('.js'));
+            }
+
+            logger.debug(`updating step with id ${currentStepId}`);
+
             oldSteps[currentStepId][0].Bit2Archetypes__Template__c = steps[sKey]; 
             //oldSteps[currentStepId][0].Bit2Archetypes__Action_Objs__c = fullConditionVariables;
             //oldColumnActions[oldSteps[currentStepId][0].Bit2Archetypes__Archetype_Action__r.Bit2Archetypes__External_Id__c][0].Bit2Archetypes__Object_Mapping__c = fullConditionVariablesPath;
@@ -186,7 +206,14 @@ module.exports.checkBundleExistence = (archetypename,b2wprojectpath = constants.
 }
 
 
-module.exports.readBundleJsonFile = (archetypename,b2wprojectpath = constants.CURRENT_WORK_DIR)=>{
+module.exports.readBundleJsonFile = async (archetypename,orgalias,b2wprojectpath = constants.CURRENT_WORK_DIR)=>{
+
+    const archetypeJsonFromOrg = await csvmanager.reAlignArchetypeMetadataJSONWithOrg(archetypename,orgalias);
+
+    if(archetypeJsonFromOrg){
+        return JSON.stringify(archetypeJsonFromOrg);
+    }
+
     const requestedArchetypeBundlePath = join(b2wprojectpath,constants.ARCHTYPE_FOLDER_NAME,archetypename,`${archetypename}.json`);
     return fs.readFileSync(requestedArchetypeBundlePath,'utf-8');
 }
@@ -244,8 +271,8 @@ module.exports.createArchetypeBoilerplate = (path = constants.CURRENT_WORK_DIR,o
 }
 
 
-module.exports.addConditionToBundle = (opts,path = constants.CURRENT_WORK_DIR) => {
-    const {archetypename,conditionname,recordtypes} = opts;
+module.exports.addConditionToBundle = async (opts,path = constants.CURRENT_WORK_DIR) => {
+    const {archetypename,conditionname,recordtypes,orgalias} = opts;
 
     const rtMapping = {};
     for(const rt of recordtypes){
@@ -257,7 +284,7 @@ module.exports.addConditionToBundle = (opts,path = constants.CURRENT_WORK_DIR) =
         condExtId,
         conditionname,
         rtMapping,
-        bundlejsonstr : this.readBundleJsonFile(archetypename)
+        bundlejsonstr : await this.readBundleJsonFile(archetypename,orgalias)
     };
     const updatedBundleJson = archetypemanager.addarchetypeconditiontobundle(condopts);
 
@@ -271,8 +298,8 @@ module.exports.addConditionToBundle = (opts,path = constants.CURRENT_WORK_DIR) =
     
 }
 
-module.exports.addActionToBundle = (opts,path = constants.CURRENT_WORK_DIR) => {
-    const {archetypename,actionname,recordtypes} = opts;
+module.exports.addActionToBundle = async (opts,path = constants.CURRENT_WORK_DIR) => {
+    const {archetypename,actionname,recordtypes,orgalias} = opts;
 
     const rtMapping = {};
     for(const rt of recordtypes){
@@ -283,15 +310,15 @@ module.exports.addActionToBundle = (opts,path = constants.CURRENT_WORK_DIR) => {
         actExtId,
         actionname,
         rtMapping,
-        bundlejsonstr : this.readBundleJsonFile(archetypename)
+        bundlejsonstr : await this.readBundleJsonFile(archetypename,orgalias)
     };
     const updatedBundleJson = archetypemanager.addarchetypeactiontobundle(actopts);
     const bundleLocation = join(path,constants.ARCHTYPE_FOLDER_NAME,archetypename);
     fs.writeFileSync(join(bundleLocation,`${archetypename}.json`),JSON.stringify(updatedBundleJson,null,"\t"));
 }
 
-module.exports.addActionStepToBundle = (opts,path = constants.CURRENT_WORK_DIR) => {
-    const {archetypename,actionname,recordtypes,stepname,sequence} = opts;
+module.exports.addActionStepToBundle = async (opts,path = constants.CURRENT_WORK_DIR) => {
+    const {archetypename,actionname,recordtypes,stepname,sequence,orgalias} = opts;
     const rtMapping = {};
     for(const rt of recordtypes){
         rtMapping[rt.SobjectType]= rt.Id;
@@ -303,7 +330,7 @@ module.exports.addActionStepToBundle = (opts,path = constants.CURRENT_WORK_DIR) 
         actionname,
         rtMapping,
         sequence,
-        bundlejsonstr : this.readBundleJsonFile(archetypename)
+        bundlejsonstr : await this.readBundleJsonFile(archetypename,orgalias)
     };
     const updatedBundleJson = archetypemanager.addarchetypeactionsteptobundle(stepopts);
     const bundleLocation = join(path,constants.ARCHTYPE_FOLDER_NAME,archetypename);
@@ -315,8 +342,8 @@ module.exports.addActionStepToBundle = (opts,path = constants.CURRENT_WORK_DIR) 
 }
 
 
-module.exports.associateExistingActionToArchetype = (opts,path = constants.CURRENT_WORK_DIR) => {
-    const {archetypename,actionExtId,recordtypes,sequence} = opts;
+module.exports.associateExistingActionToArchetype = async (opts,path = constants.CURRENT_WORK_DIR) => {
+    const {archetypename,actionExtId,recordtypes,sequence,orgalias} = opts;
     const rtMapping = {};
     for(const rt of recordtypes){
         rtMapping[rt.SobjectType]= rt.Id;
@@ -328,13 +355,15 @@ module.exports.associateExistingActionToArchetype = (opts,path = constants.CURRE
         columnActExtId,
         rtMapping,
         sequence,
-        bundlejsonstr : this.readBundleJsonFile(archetypename)
+        bundlejsonstr : await this.readBundleJsonFile(archetypename,orgalias)
     };
 
     const updatedBundleJson = archetypemanager.associateactiontobundle(opts);
     const bundleLocation = join(path,constants.ARCHTYPE_FOLDER_NAME,archetypename);
     fs.writeFileSync(join(bundleLocation,`${archetypename}.json`),JSON.stringify(updatedBundleJson,null,"\t"));
 }
+
+
 
 
 
