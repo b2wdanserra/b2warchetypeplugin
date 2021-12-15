@@ -82,14 +82,15 @@ OPTIONS
   --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level
 ```
 #### 4. CreateArtifact
-[`sfdx b2warchetypes:createartifact [-d] [-t] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#)
+[`sfdx b2warchetypes:createartifact [-u <string>] [-d] [-t] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#)
 ```
 Create artifact folder with csv data  for external deployment tools
 
 USAGE
-  $ sfdx b2warchetypes:createartifact [-d] [-t] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx b2warchetypes:createartifact [-u <string>] [-d] [-t] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
 
 OPTIONS
+  -u, --targetusername=targetusername                   username or alias for the target org; overrides default target org
   -d, --debug                                           enables debug logging
   -t, --timestamp                                       append timestamp to artifact folder to manage uniqueness
   --json                                                format output as json
