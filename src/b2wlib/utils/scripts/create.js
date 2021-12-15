@@ -9,7 +9,7 @@ module.exports.createarchetype = async function(logLevel,opts,projectPath = cons
         if(filemanager.checkBundleExistence(opts.archetypename,projectPath)){
             throw new Error('The choosen archetype name is already in use!');
         }
-        filemanager.createArchetypeBoilerplate(projectPath,opts);
+        await filemanager.createArchetypeBoilerplate(projectPath,opts);
     }catch(ex){
         logger.error(printError(ex));
     }
@@ -22,7 +22,7 @@ module.exports.createarchetypecondition = async function (logLevel,opts,projectP
         if(!filemanager.checkBundleExistence(opts.archetypename,projectPath)){
             throw new Error(`The choosen archetype ${opts.archetypename} does not exist!`)
         }
-        filemanager.addConditionToBundle(opts);
+        await filemanager.addConditionToBundle(opts);
     }catch(ex){
         logger.error(printError(ex));
     }
@@ -35,7 +35,7 @@ module.exports.createarchetypeaction = async function (logLevel,opts,projectPath
         if(!filemanager.checkBundleExistence(opts.archetypename,projectPath)){
             throw new Error(`The choosen archetype ${opts.archetypename} does not exist!`);
         }
-        filemanager.addActionToBundle(opts);
+        await filemanager.addActionToBundle(opts);
     }catch(ex){
         logger.error(printError(ex));
     }
@@ -48,7 +48,7 @@ module.exports.createarchetypeactionstep = async function (logLevel,opts,project
         if(!filemanager.checkBundleExistence(opts.archetypename,projectPath)){
             throw new Error(`The choosen archetype ${opts.archetypename} does not exist!`);
         }
-        filemanager.addActionStepToBundle(opts);
+        await filemanager.addActionStepToBundle(opts);
     }catch(ex){
         logger.error(printError(ex));
     }

@@ -151,6 +151,7 @@ module.exports.addarchetypeconditiontobundle = (opts) => {
         condExtId,
         columnCondExtId : utility.generatebase16UUID(),
         archExtId : parsedJson.Bit2Archetypes__Archetype__c.Bit2Archetypes__External_Id__c,
+        archId : parsedJson.Bit2Archetypes__Archetype__c.Id,
         sequence
     });
 
@@ -184,6 +185,7 @@ module.exports.addarchetypeactiontobundle = (opts) => {
         actExtId,
         columnActExtId : utility.generatebase16UUID(),
         archExtId : parsedJson.Bit2Archetypes__Archetype__c.Bit2Archetypes__External_Id__c,
+        archId : parsedJson.Bit2Archetypes__Archetype__c.Id,
         sequence
     });
 
@@ -213,6 +215,7 @@ module.exports.addarchetypeactionsteptobundle = (opts) => {
         stepname,
         sequence,
         actExtId : requestedaction[0]['Bit2Archetypes__External_Id__c'],
+        actId : requestedaction[0]['Id'],
         rtId : rtMapping['Bit2Archetypes__Archetype_Action_Step__c']
     });
 
@@ -227,12 +230,11 @@ module.exports.associateactiontobundle = (opts) => {
     const {bundlejsonstr,actExtId,columnActExtId,rtMapping,sequence} = opts;
     const parsedJson = JSON.parse(bundlejsonstr);
     
-    const archExtId = parsedJson['Bit2Archetypes__Archetype__c'].Bit2Archetypes__External_Id__c;
-
     const newColumnAction = this.generateColActionJsonPlaceHolder({
         columnActExtId,
         archExtId,
-        actExtId,
+        archExtId : parsedJson.Bit2Archetypes__Archetype__c.Bit2Archetypes__External_Id__c,
+        archId : parsedJson.Bit2Archetypes__Archetype__c.Id,
         sequence
     });
 
@@ -274,11 +276,11 @@ module.exports.generateActionJsonPlaceHolder = (opts) => {
 
 module.exports.generateColActionJsonPlaceHolder = (opts) => {
     
-    const {columnActExtId,archExtId,actExtId,sequence} = opts;
+    const {columnActExtId,archExtId,actExtId,actId,archId,sequence} = opts;
     const colActionBP =  {
         "Id": columnActExtId,
-        "Bit2Archetypes__Archetype__c": archExtId,
-        "Bit2Archetypes__Archetype_Action__c": actExtId,
+        "Bit2Archetypes__Archetype__c": archId && archId!==archExtId ? archId : archExtId,
+        "Bit2Archetypes__Archetype_Action__c": actId && actId!==actExtId ? actId : actExtId,
         "Bit2Archetypes__External_Id__c": columnActExtId,
         "Bit2Archetypes__Synchronization_Sequence__c": sequence || "0",
         "Bit2Archetypes__Visualization_Sequence__c": sequence || "0",
@@ -294,11 +296,11 @@ module.exports.generateColActionJsonPlaceHolder = (opts) => {
 }
 
 module.exports.generateColConditionJsonPlaceHolder = (opts) => {
-    const {columnCondExtId,archExtId,condExtId,sequence} = opts;
+    const {columnCondExtId,archExtId,condExtId,condId,archId,sequence} = opts;
     const colConditionBP = {
         "Id": columnCondExtId,
-        "Bit2Archetypes__Archetype__c": archExtId,
-        "Bit2Archetypes__Archetype_Condition__c": condExtId,
+        "Bit2Archetypes__Archetype__c": archId && archId!==archExtId ? archId : archExtId,
+        "Bit2Archetypes__Archetype_Condition__c": condId && condId!==condExtId ? condId : condExtId,
         "Bit2Archetypes__External_Id__c": columnCondExtId,
         "Bit2Archetypes__Synchronization_Sequence__c": sequence || "0",
         "Bit2Archetypes__Visualization_Sequence__c": sequence || "0",
@@ -315,11 +317,11 @@ module.exports.generateColConditionJsonPlaceHolder = (opts) => {
 
 module.exports.generateActionStepJsonPlaceHolder = (opts) => {
 
-    const {stepExtId,rtId,actExtId,stepname,sequence} = opts;
+    const {stepExtId,rtId,actExtId,actId,stepname,sequence} = opts;
     const actionStepBP = {
         "Id": stepExtId,
         "RecordTypeId" : rtId,
-        "Bit2Archetypes__Archetype_Action__c": actExtId,
+        "Bit2Archetypes__Archetype_Action__c": actId && actId!==actExtId ? actId : actExtId,
         "Name": stepname,
         "Bit2Archetypes__Execution_sequence__c": sequence,
         "Bit2Archetypes__External_Id__c": stepExtId,

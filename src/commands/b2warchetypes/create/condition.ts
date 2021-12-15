@@ -45,7 +45,8 @@ export default class CreateArchetypeCondition extends SfdxCommand{
             const opts = {
                 archetypename : this.flags.archetypename,
                 recordtypes : recordtypes,
-                conditionname : this.flags.conditionname
+                conditionname : this.flags.conditionname,
+                orgalias : this.flags.targetusername
             }
             await create.createarchetypecondition(debugLevel,opts);
             this.ux.stopSpinner();

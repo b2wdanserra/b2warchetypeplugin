@@ -9,7 +9,7 @@ const messages = Messages.loadMessages('b2warchetype', 'save');
 export default class Save extends SfdxCommand{
 
     //setting up static properties for the command
-    protected static requiresUsername = false;
+    protected static requiresUsername = true;
     public static description = messages.getMessage('commandDescription');
 
     protected static flagsConfig = {
@@ -28,9 +28,10 @@ export default class Save extends SfdxCommand{
     public async run(): Promise<any> {
         try{
             const archetypeName = this.flags.name;
+            const orgAlias = this.flags.targetusername;
             const debugLevel = this.flags.debug ? 'debug' : 'error';
             this.ux.startSpinner(`Saving Bit2Win Archetype with name ${archetypeName}`);
-            save(archetypeName,debugLevel);
+            await save(archetypeName,debugLevel,orgAlias);
             this.ux.stopSpinner();
         }catch(ex){
             throw new SfdxError(`An error as occurred : ${ex}` )

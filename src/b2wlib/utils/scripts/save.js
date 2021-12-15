@@ -3,10 +3,10 @@ const constants = require('../../constants');
 const logger = require('../logger');
 const utility = require('../utility');
 
-module.exports = (archetypename,logLevel,projectPath=constants.CURRENT_WORK_DIR)=>{
+module.exports = async (archetypename,logLevel,orgAlias = constants.ORG_ALIAS,projectPath=constants.CURRENT_WORK_DIR)=>{
     try{
         logger.setLevel(logLevel);
-        filemanager.updateArchetypeFile(archetypename,projectPath);
+        await filemanager.updateArchetypeFile(archetypename,orgAlias,projectPath);
     }catch(ex){
         // throw new Error(ex.message);
         logger.error(utility.printError(ex));

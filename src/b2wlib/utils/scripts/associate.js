@@ -9,7 +9,7 @@ module.exports.associateAction = async function(logLevel,opts,projectPath = cons
         if(!filemanager.checkBundleExistence(opts.archetypename,projectPath)){
             throw new Error(`The choosen archetype ${opts.archetypename} does not exist!`);
         }
-        filemanager.associateExistingActionToArchetype(opts);
+        await filemanager.associateExistingActionToArchetype(opts);
     }catch(ex){
         logger.error(printError(ex));
     }
