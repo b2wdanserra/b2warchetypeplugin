@@ -33,7 +33,7 @@ export default class CreateArtifact extends SfdxCommand{
             const orgAlias = this.flags.targetusername;
 
             this.ux.startSpinner(`Creating artifact from Bit2Win Archetypes files`);
-            await createartifacts(debugLevel,timestamp,orgAlias);
+            await createartifacts(debugLevel,orgAlias,timestamp);
             this.ux.stopSpinner();
         }catch(ex){
             throw new SfdxError(`An error as occurred : ${ex}` )
