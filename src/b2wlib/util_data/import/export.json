@@ -1,5 +1,5 @@
 {
-    "allOrNone": true,
+    "allOrNone": false,
     "apiVersion": "50.0",
     "promptOnMissingParentObjects": true,
     "concurrencyMode": "Serial",
