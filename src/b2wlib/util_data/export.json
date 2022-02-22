@@ -13,7 +13,7 @@
         },
         {
             "description" : "Archetype Conditions",
-            "query" : "Select Name,RecordTypeId,Bit2Archetypes__External_Id__c, Bit2Archetypes__Label__c, Bit2Archetypes__Name__c, Bit2Archetypes__Path__c, Bit2Archetypes__Type__c, Bit2Archetypes__Template__c, Bit2Archetypes__Variables__c, Bit2Archetypes__Relationship__c  from Bit2Archetypes__Archetype_Condition__c",
+            "query" : "Select RecordTypeId,Bit2Archetypes__External_Id__c, Bit2Archetypes__Label__c, Bit2Archetypes__Name__c, Bit2Archetypes__Path__c, Bit2Archetypes__Type__c, Bit2Archetypes__Template__c, Bit2Archetypes__Variables__c, Bit2Archetypes__Relationship__c  from Bit2Archetypes__Archetype_Condition__c",
             "operation": "Readonly",
             "externalId": "Bit2Archetypes__External_Id__c"
             
