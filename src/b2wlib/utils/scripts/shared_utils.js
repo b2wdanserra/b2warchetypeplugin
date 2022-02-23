@@ -3,8 +3,7 @@ const {join} = require('path');
 const logger = require('../logger');
 const constants = require('../../constants');
 const _ = require('lodash');
-const { ElementFlags } = require('typescript');
-
+const rimraf = require('rimraf');
 
 
 module.exports.readArchetypeFileOnSubDirs = (b2wprojectpath = constants.PROJECT_ROOT) =>{
@@ -29,11 +28,14 @@ module.exports.readArchetypeFileOnSubDirs = (b2wprojectpath = constants.PROJECT_
 }
 
 module.exports.emptySFDMULogs = () => {
-    const importLogPath = join(constants.UTIL_DATA_BASE_FOLDER,'util_data','import','logs');
-    const exportLogPath = join(constants.UTIL_DATA_BASE_FOLDER,'util_data','logs');
+    const importLogPath = join(constants.UTIL_DATA_BASE_FOLDER,'util_data','import','logs','*.log');
+    const exportLogPath = join(constants.UTIL_DATA_BASE_FOLDER,'util_data','logs','*.log');
 
-    fs.emptyDirSync(importLogPath);
-    fs.emptyDirSync(exportLogPath);
+    // fs.emptyDirSync(importLogPath);
+    // fs.emptyDirSync(exportLogPath);
+
+    rimraf(importLogPath,()=>{logger.debug(`Clean up completed : ${importLogPath}`)});
+    rimraf(exportLogPath,()=>{logger.debug(`Clean up completed : ${exportLogPath}`)});
 
 }
 
