@@ -245,6 +245,9 @@ async function writeCSV(jsonFileMap,path,rtPath){
     //adding eventually excluded records in jsonfilemap to recreate csv correctly
     for(const jsonMapKey of Object.keys(jsonFileMap)){
 
+
+        logger.debug(`Working export file file...${jsonMapKey}`);
+
         const exportJsonKey = `${jsonMapKey.substring(0,jsonMapKey.lastIndexOf('.'))}${constants.TARGET_FILE_EXTENSION_FINAL}`;
         const exportJsonObjList = exportJsonContents[exportJsonKey];
         const jsonMapObjList = jsonFileMap[jsonMapKey];
@@ -263,7 +266,14 @@ async function writeCSV(jsonFileMap,path,rtPath){
         //v1.2.0 remapping recordtype ids
         for(const jsonObj of jsonMapObjList){
             if(jsonObj.RecordTypeId){
-                jsonObj['RecordTypeId'] = rtGrouping[jsonObj.RecordTypeId][0].Id; 
+                logger.debug(`Fixing recordtype for id : ${jsonObj.RecordTypeId}`);
+                if( rtGrouping[jsonObj.RecordTypeId] 
+                    && Array.isArray(rtGrouping[jsonObj.RecordTypeId]) 
+                    && rtGrouping[jsonObj.RecordTypeId].length>0 ){
+
+                    jsonObj['RecordTypeId'] = rtGrouping[jsonObj.RecordTypeId][0].Id; 
+                    
+                }
             }
         }
     }
