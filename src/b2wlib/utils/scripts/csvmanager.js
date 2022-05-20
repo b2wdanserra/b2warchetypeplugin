@@ -1,11 +1,11 @@
 const csv = require('csvtojson');
 const {parseAsync} = require('json2csv');
-const fs = require('fs');
+const fs = require('fs-extra');
 const _ = require('lodash');
 const {join} = require('path');
 const logger = require('../logger');
 const constants = require('../../constants');
-const {readFilesAsObject,readArchetypeFileOnSubDirs,createArtifactDirectoryStructure} = require('./shared_utils');
+const {readFilesAsObject,readArchetypeFileOnSubDirs,createArtifactDirectoryStructure,cleanEnvIds} = require('./shared_utils');
 const EXTRACTED_FILE_PATH = join(constants.UTIL_DATA_BASE_FOLDER,'util_data','target');
 const IMPORT_PROJECT_PATH = join(constants.UTIL_DATA_BASE_FOLDER,'util_data','import');
 const BASE_PROJECT_PATH = constants.UTIL_DATA_BASE_FOLDER;
@@ -45,26 +45,34 @@ module.exports.reAlignArchetypeMetadataJSONWithOrg = async (archetypeName,orgAli
 function reparentRecords(csvJsonContents){
 
     const result = [];
+    const cleanUpParams = constants['CLEAN_UP_IDS'];
+
+    //v1.2.0 --> archetype mapping will be cleaned of environment dependent ids and will be based on externalIds only
+    
 
     //getting objects
-    const archetypes = csvJsonContents[`${constants.ARCHTYPE_OBJECT_KEY}${constants.TARGET_FILE_EXTENSION_FINAL}`];
-    const columnConditions = csvJsonContents[`${constants.COLUMN_COND_OBJECT_KEY}${constants.TARGET_FILE_EXTENSION_FINAL}`];
-    const columnActions = csvJsonContents[`${constants.COLUMN_ACT_OBJECT_KEY}${constants.TARGET_FILE_EXTENSION_FINAL}`];
-    const actions = csvJsonContents[`${constants.ACTION_OBJECT_KEY}${constants.TARGET_FILE_EXTENSION_FINAL}`];
-    const conditions = csvJsonContents[`${constants.CONDITION_OBJECT_KEY}${constants.TARGET_FILE_EXTENSION_FINAL}`];
-    const actionSteps = csvJsonContents[`${constants.ACTION_STEP_OBJECT_KEY}${constants.TARGET_FILE_EXTENSION_FINAL}`];
-    const conditionParams = csvJsonContents[`${constants.CONDITION_PARAM_OBJECT_KEY}${constants.TARGET_FILE_EXTENSION_FINAL}`];
-    const actionParams = csvJsonContents[`${constants.ACTION_PARAM_OBJECT_KEY}${constants.TARGET_FILE_EXTENSION_FINAL}`];
+
+    //v1.2.0. filter json content excluding ids
+    const archetypes = cleanEnvIds(csvJsonContents[`${constants.ARCHTYPE_OBJECT_KEY}${constants.TARGET_FILE_EXTENSION_FINAL}`],cleanUpParams[constants.ARCHTYPE_OBJECT_KEY]);
+    const columnConditions = cleanEnvIds(csvJsonContents[`${constants.COLUMN_COND_OBJECT_KEY}${constants.TARGET_FILE_EXTENSION_FINAL}`],cleanUpParams[constants.COLUMN_COND_OBJECT_KEY]);
+    const columnActions = cleanEnvIds(csvJsonContents[`${constants.COLUMN_ACT_OBJECT_KEY}${constants.TARGET_FILE_EXTENSION_FINAL}`],cleanUpParams[constants.COLUMN_ACT_OBJECT_KEY]);
+    const actions = cleanEnvIds(csvJsonContents[`${constants.ACTION_OBJECT_KEY}${constants.TARGET_FILE_EXTENSION_FINAL}`],cleanUpParams[constants.ACTION_OBJECT_KEY]);
+    const conditions = cleanEnvIds(csvJsonContents[`${constants.CONDITION_OBJECT_KEY}${constants.TARGET_FILE_EXTENSION_FINAL}`],cleanUpParams[constants.CONDITION_OBJECT_KEY]);
+    const actionSteps = cleanEnvIds(csvJsonContents[`${constants.ACTION_STEP_OBJECT_KEY}${constants.TARGET_FILE_EXTENSION_FINAL}`],cleanUpParams[constants.ACTION_STEP_OBJECT_KEY]);
+    const conditionParams = cleanEnvIds(csvJsonContents[`${constants.CONDITION_PARAM_OBJECT_KEY}${constants.TARGET_FILE_EXTENSION_FINAL}`],cleanUpParams[constants.CONDITION_PARAM_OBJECT_KEY]);
+    const actionParams = cleanEnvIds(csvJsonContents[`${constants.ACTION_PARAM_OBJECT_KEY}${constants.TARGET_FILE_EXTENSION_FINAL}`],cleanUpParams[constants.ACTION_PARAM_OBJECT_KEY]);
 
 
     //grouping objects
-    const gArchetypes = _.groupBy(archetypes,'Id');
-    const gColumnConditions = _.groupBy(columnConditions,'Bit2Archetypes__Archetype__c');
-    const gColumnActions = _.groupBy(columnActions,'Bit2Archetypes__Archetype__c');
+    const gArchetypes = _.groupBy(archetypes,'Bit2Archetypes__External_Id__c');
+    const gColumnConditions = _.groupBy(columnConditions,'Bit2Archetypes__Archetype__r.Bit2Archetypes__External_Id__c');
+    const gColumnActions = _.groupBy(columnActions,'Bit2Archetypes__Archetype__r.Bit2Archetypes__External_Id__c');
 
-    // const gActions = _.groupBy(actions,'Id');
-    // const gConditions = _.groupBy(conditions,'Id');
 
+    logger.debug(`Grouped column actions ${JSON.stringify(gColumnActions)}`);
+    logger.debug(`Grouped column conditions ${JSON.stringify(gColumnActions)}`);
+
+    //v1.2.0 change the mapping for reparenting, using externalIds only
     for(const arch of archetypes){
         const singleArchetypeJson = {};
 
@@ -74,45 +82,48 @@ function reparentRecords(csvJsonContents){
         logger.debug(`Processing reparenting for archetype: ${arch.Bit2Archetypes__Name__c}`);
 
         singleArchetypeJson[constants.ARCHTYPE_OBJECT_KEY] = arch;
-        singleArchetypeJson[constants.COLUMN_COND_OBJECT_KEY] = gColumnConditions[arch.Id];
-        singleArchetypeJson[constants.COLUMN_ACT_OBJECT_KEY] = gColumnActions[arch.Id];
+        singleArchetypeJson[constants.COLUMN_COND_OBJECT_KEY] = gColumnConditions[arch.Bit2Archetypes__External_Id__c];
+        singleArchetypeJson[constants.COLUMN_ACT_OBJECT_KEY] = gColumnActions[arch.Bit2Archetypes__External_Id__c];
 
         try{
             //associationg action conditions(trickier)
             let actionsIds = [];
             let conditionsIds = [];
 
-            if(gColumnActions[arch.Id]){
-                actionsIds = gColumnActions[arch.Id].map((colact)=>{
-                    return colact.Bit2Archetypes__Archetype_Action__c;
+            if(gColumnActions[arch.Bit2Archetypes__External_Id__c]){
+                actionsIds = gColumnActions[arch.Bit2Archetypes__External_Id__c].map((colact)=>{
+                    return colact.Bit2Archetypes__Archetype_Action__r.Bit2Archetypes__External_Id__c;
                 });
             }
 
-            if(gColumnConditions[arch.Id]){
-                conditionsIds = gColumnConditions[arch.Id].map((colcond)=>{
-                    return colcond.Bit2Archetypes__Archetype_Condition__c;
+            if(gColumnConditions[arch.Bit2Archetypes__External_Id__c]){
+                conditionsIds = gColumnConditions[arch.Bit2Archetypes__External_Id__c].map((colcond)=>{
+                    return colcond.Bit2Archetypes__Archetype_Condition__r.Bit2Archetypes__External_Id__c;
                 })
             }
 
+            logger.debug(`Action Ids..${JSON.stringify(actionsIds)}`);
+            logger.debug(`Condition Ids...${JSON.stringify(conditions)}`);
+
             singleArchetypeJson[constants.ACTION_OBJECT_KEY] = actions.filter((act)=>{
-                return actionsIds.includes(act.Id);
+                return actionsIds.includes(act.Bit2Archetypes__External_Id__c);
             })
 
             singleArchetypeJson[constants.CONDITION_OBJECT_KEY] = conditions.filter((cond)=>{
-                return conditionsIds.includes(cond.Id);
+                return conditionsIds.includes(cond.Bit2Archetypes__External_Id__c);
             })
 
             singleArchetypeJson[constants.ACTION_PARAM_OBJECT_KEY] = actionParams.filter((ap)=>{
-                return actionsIds.includes(ap.Bit2Archetypes__Archetype_Action__c);
+                return actionsIds.includes(ap.Bit2Archetypes__Archetype_Action__r.Bit2Archetypes__External_Id__c);
             });
 
             singleArchetypeJson[constants.CONDITION_PARAM_OBJECT_KEY] = conditionParams.filter((cp)=>{
-                return conditionsIds.includes(cp.Bit2Archetypes__Archetype_Condition__c);
+                    return conditionsIds.includes(cp.Bit2Archetypes__Archetype_Condition__r.Bit2Archetypes__External_Id__c);
             })
 
             //associating steps
             singleArchetypeJson[constants.ACTION_STEP_OBJECT_KEY] = actionSteps.filter((step)=>{
-                return actionsIds.includes(step.Bit2Archetypes__Archetype_Action__c);
+                return actionsIds.includes(step.Bit2Archetypes__Archetype_Action__r.Bit2Archetypes__External_Id__c);
             })
 
             result.push(singleArchetypeJson);
@@ -158,9 +169,6 @@ function recreateCSVFromJSON(b2wprojectpath = BASE_PROJECT_PATH){
                 }
             }
         }
-
-        //TODO: add unmapped rows inside export csv
-
         return individualFilesMap;
     }catch(ex){
         logger.error(utility.printError(ex));
@@ -189,7 +197,7 @@ async function writeExportCSVToFile(jsonFileMap,generateArtifact,timestamp=false
         const rtFileNameSrc = join(constants.UTIL_DATA_BASE_FOLDER,'util_data','RecordType.csv');
         const rtFileNameTarget = join(IMPORT_PROJECT_PATH,'RecordType.csv');
         fs.copyFileSync(rtFileNameSrc,rtFileNameTarget);
-        const csvWriteResult = await writeCSV(jsonFileMap,IMPORT_PROJECT_PATH);
+        const csvWriteResult = await writeCSV(jsonFileMap,IMPORT_PROJECT_PATH,rtFileNameSrc);
     }else{
         generateArtifactCSVStructures(jsonFileMap,timestamp);
     }
@@ -210,7 +218,7 @@ async function generateArtifactCSVStructures(jsonfileMap,timestamp){
         const rtFileNameTarget = join(artifactPath,'RecordType.csv');
         fs.copyFileSync(rtFileNameSrc,rtFileNameTarget);
 
-        const csvWriteResult = await writeCSV(jsonfileMap,artifactPath);
+        const csvWriteResult = await writeCSV(jsonfileMap,artifactPath,rtFileNameSrc);
     }catch(ex){
         logger.error(utility.printError(ex));
     }
@@ -218,17 +226,27 @@ async function generateArtifactCSVStructures(jsonfileMap,timestamp){
 }
 
 
-async function writeCSV(jsonFileMap,path){
+async function writeCSV(jsonFileMap,path,rtPath){
+
+    //v1.2.0 added recordtype mapping file path
+
     logger.debug('Starting csv writing...');
     logger.debug(`currentJSON fileMap ${JSON.stringify(jsonFileMap)}`);
 
     //reconstruction of output csv also with not "connected records"
     const exportJsonContents = await readMultipleCSV(EXTRACTED_FILE_PATH);
+    const recordTypesList = await readSingleCSV(rtPath,'RecordTypes');
+    const rtGrouping = _.groupBy(recordTypesList['RecordTypes'],'$$DeveloperName$NamespacePrefix$SobjectType');
 
+    logger.debug(`RecordType Mappings ${JSON.stringify(recordTypesList)}`);
     logger.debug(`Exported Json Contents ${JSON.stringify(exportJsonContents)}`);
+
 
     //adding eventually excluded records in jsonfilemap to recreate csv correctly
     for(const jsonMapKey of Object.keys(jsonFileMap)){
+
+
+        logger.debug(`Working export file file...${jsonMapKey}`);
 
         const exportJsonKey = `${jsonMapKey.substring(0,jsonMapKey.lastIndexOf('.'))}${constants.TARGET_FILE_EXTENSION_FINAL}`;
         const exportJsonObjList = exportJsonContents[exportJsonKey];
@@ -244,10 +262,38 @@ async function writeCSV(jsonFileMap,path){
                 jsonMapObjList.push(currentRecord);
             }
         }
+
+        //v1.2.0 remapping recordtype ids
+        for(const jsonObj of jsonMapObjList){
+            if(jsonObj.RecordTypeId){
+                logger.debug(`Fixing recordtype for id : ${jsonObj.RecordTypeId}`);
+                if( rtGrouping[jsonObj.RecordTypeId] 
+                    && Array.isArray(rtGrouping[jsonObj.RecordTypeId]) 
+                    && rtGrouping[jsonObj.RecordTypeId].length>0 ){
+
+                    jsonObj['RecordTypeId'] = rtGrouping[jsonObj.RecordTypeId][0].Id; 
+                    
+                }
+            }
+        }
     }
 
     for(const jsonMapKey of Object.keys(jsonFileMap)){
-        const csv = await parseAsync(jsonFileMap[jsonMapKey]);
+        //fix header quoting
+        let csv = await parseAsync(jsonFileMap[jsonMapKey]);
+        let csvLines = csv.split('\n');
+        
+        let csvHeader = csvLines[0];
+
+        logger.debug(`current csv file header (file ${jsonMapKey}): ${csvHeader} `);
+
+        const find = '"';
+        const re = new RegExp(find, 'g');
+        csvHeader = csvHeader.replace(re,'');
+
+        csvLines.shift();
+        csv = [csvHeader,...csvLines].join('\n');
+
         const out = fs.writeFile(join(path,jsonMapKey),csv,(err)=>{
             if(err){
                 logger.error(utility.printError(err));
@@ -268,6 +314,17 @@ function readMultipleCSV (dirname){
             const csvDataAsJson = await csv().fromString(fileContent);
             resultObject[k] = csvDataAsJson;
         }
+        resolve(resultObject);
+    })
+}
+
+function readSingleCSV (filepath,key){
+    return new Promise(async (resolve,reject)=>{
+        const rawFileData = fs.readFileSync(filepath).toString();
+        logger.debug(`single csv filedata ${rawFileData}`);
+        const resultObject = {}
+        const csvDataAsJson = await csv().fromString(rawFileData);
+        resultObject[key]= csvDataAsJson;
         resolve(resultObject);
     })
 }

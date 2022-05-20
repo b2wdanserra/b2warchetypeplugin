@@ -16,5 +16,15 @@ module.exports = {
     "TARGET_FILE_EXTENSION_FINAL" : "_readonly_target.csv",
     "IMPORT_FILE_EXTENSION_FINAL" : "_upsert_source.csv",
     "ORG_ALIAS" : "B2WLAB",
-    "ARTIFACT_FOLDER_PREFIX" : "b2w_arch_artifact"
+    "ARTIFACT_FOLDER_PREFIX" : "b2w_arch_artifact",
+    "CLEAN_UP_IDS" : {
+        "Bit2Archetypes__Archetype__c" : [],
+        "Bit2Archetypes__Archetype_Column_Condition__c" : ['Bit2Archetypes__Archetype__c','Bit2Archetypes__Archetype_Condition__c'],
+        "Bit2Archetypes__Archetype_Column_Action__c" : ['Bit2Archetypes__Archetype__c','Bit2Archetypes__Archetype_Action__c'],
+        "Bit2Archetypes__Archetype_Action__c" : [],
+        "Bit2Archetypes__Archetype_Condition__c" : [],
+        "Bit2Archetypes__Archetype_Action_Step__c" : ['Bit2Archetypes__Archetype_Action__c'],
+        "Bit2Archetypes__Archetype_Action_Parameter__c" : ['Bit2Archetypes__Archetype_Action__c'],
+        "Bit2Archetypes__Archetype_Condition_Parameter__c" : ['Bit2Archetypes__Archetype_Condition__c']
+    }
 }

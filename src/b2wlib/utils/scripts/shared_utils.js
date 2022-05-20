@@ -1,8 +1,9 @@
-const fs = require('fs');
+const fs = require('fs-extra');
 const {join} = require('path');
 const logger = require('../logger');
 const constants = require('../../constants');
-
+const _ = require('lodash');
+const rimraf = require('rimraf');
 
 
 module.exports.readArchetypeFileOnSubDirs = (b2wprojectpath = constants.PROJECT_ROOT) =>{
@@ -26,6 +27,17 @@ module.exports.readArchetypeFileOnSubDirs = (b2wprojectpath = constants.PROJECT_
 
 }
 
+module.exports.emptySFDMULogs = () => {
+    const importLogPath = join(constants.UTIL_DATA_BASE_FOLDER,'util_data','import','logs','*.log');
+    const exportLogPath = join(constants.UTIL_DATA_BASE_FOLDER,'util_data','logs','*.log');
+
+    // fs.emptyDirSync(importLogPath);
+    // fs.emptyDirSync(exportLogPath);
+
+    rimraf(importLogPath,()=>{logger.debug(`Clean up completed : ${importLogPath}`)});
+    rimraf(exportLogPath,()=>{logger.debug(`Clean up completed : ${exportLogPath}`)});
+
+}
 
 
 module.exports.createDirectoryIfNotExists = function (dirpath){
@@ -40,20 +52,22 @@ module.exports.createArtifactDirectoryStructure = (path = constants.CURRENT_WORK
         const rootArtifactFolderPath = timestamp 
         ? join(path,`${constants.ARTIFACT_FOLDER_PREFIX}_${new Date().getTime()}`)
         : join(path,constants.ARTIFACT_FOLDER_PREFIX);
+
+        logger.debug(`Artifact folder path...${rootArtifactFolderPath}`);
         
         const logDirectoryPath = join(rootArtifactFolderPath,'logs');
         const sourceDirectoryPath = join(rootArtifactFolderPath,'source');
         const targetDirectoryPath = join(rootArtifactFolderPath,'target'); 
         //creating the directory structure
-        createDirectoryIfNotExists(rootArtifactFolderPath);
-        createDirectoryIfNotExists(logDirectoryPath);
-        createDirectoryIfNotExists(sourceDirectoryPath);
-        createDirectoryIfNotExists(targetDirectoryPath);
+        this.createDirectoryIfNotExists(rootArtifactFolderPath);
+        this.createDirectoryIfNotExists(logDirectoryPath);
+        this.createDirectoryIfNotExists(sourceDirectoryPath);
+        this.createDirectoryIfNotExists(targetDirectoryPath);
 
         return rootArtifactFolderPath;
 
     }catch(ex){
-        logger.error(ex);
+        logger.error(ex.message);
     }
 }
 
@@ -68,5 +82,16 @@ module.exports.readFilesAsObject = function (dirname){
         rawFileData[fileName] = file;
     });
     return rawFileData;
+}
+
+module.exports.cleanEnvIds = function(entityList,propsToRemove = []){
+    const propsToGetRidOf = [...propsToRemove,'Id'];
+    return entityList.map((elem)=>{
+        let newElem = _.omit(elem,propsToGetRidOf);
+        if(newElem.RecordTypeId && newElem.RecordType){
+            newElem = {...newElem,'RecordTypeId' : newElem.RecordType.$$DeveloperName$NamespacePrefix$SobjectType};
+        }
+        return newElem;
+    });
 }
 

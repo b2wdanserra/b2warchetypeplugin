@@ -1,6 +1,6 @@
 const constants = require('../../constants');
 const archetypemanager = require('../b2w/archetypemanager');
-const fs = require('fs');
+const fs = require('fs-extra');
 const {join} = require('path');
 const _ = require('lodash');
 const logger = require('../logger');

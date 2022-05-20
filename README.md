@@ -99,8 +99,9 @@ OPTIONS
 #### 5. Create (Beta)
 
 The create command has a set of subcommands that allow the creation of archetype related entities from scratch, building the file bundle step by step
+##### V1.2.0:  Create command is at ALPHA in this version, correct behaviour is not guaranteed so it has been excluded from read me until next minor release
 
-### 5.1 create:archetype
+<!-- ### 5.1 create:archetype
 [`sfdx b2warchetypes:create:archetype -n <string> [-d] [-c <string>] [-a <string>] [-u <string>] [--apiversion
   <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#)
 
@@ -222,3 +223,4 @@ OPTIONS
   --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
                                                                                     this command invocation
 ```
+-->
